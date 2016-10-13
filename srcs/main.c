@@ -6,7 +6,7 @@
 /*   By: jwalle <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/13 16:10:23 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/13 17:11:37 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/13 17:49:02 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,21 @@
 #include <sys/stat.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+
+void	print_output(int nsyms, int symoff, int stroff, char *ptr)
+{
+	int				i;
+	char			*string_table;
+	struct nlist_64	*array;
+
+	array = (void *)ptr + symoff;
+	string_table = (void *)ptr + stroff;
+	for (i = 0; i < nsyms; ++i)
+	{
+		printf("%s\n", string_table + array[i].n_un.n_strx);
+	}
+}
+
 
 void	handle_64(char *ptr)
 {
@@ -28,11 +43,12 @@ void	handle_64(char *ptr)
 	header = (struct mach_header_64 *)ptr;
 	ncmds = header->ncmds;
 	lc = (void *)ptr + sizeof(*header);
-	for (i = 0 ; ncmds < i ; ++i)
+	for (i = 0 ; ncmds > i ; ++i)
 	{
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
+			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
 			break ;
 		}
 		lc = (void *)lc + lc->cmdsize;
