@@ -6,7 +6,7 @@
 /*   By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/07/12 13:44:08 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/13 16:14:14 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/13 16:35:32 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <pwd.h>
+# include <fcntl.h>
 # include <grp.h>
 # include <time.h>
 # include <stdio.h>		//PRINTF A RETIRER
