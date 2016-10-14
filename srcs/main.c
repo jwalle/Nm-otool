@@ -6,7 +6,7 @@
 /*   By: jwalle <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/13 16:10:23 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/13 17:49:02 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/14 16:53:10 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,12 @@
 #include <sys/stat.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+
+
+void	print_symbol(int type)
+{
+
+}
 
 void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 {
@@ -27,10 +33,51 @@ void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 	string_table = (void *)ptr + stroff;
 	for (i = 0; i < nsyms; ++i)
 	{
-		printf("%s\n", string_table + array[i].n_un.n_strx);
+		if (array[i].n_type == 15)
+			printf("%016llx T %s\n", array[i].n_value, string_table + array[i].n_un.n_strx);
+		else if (array[i].n_type == 14)
+			printf("%016llx t %s\n", array[i].n_value, string_table + array[i].n_un.n_strx);
+		else if (array[i].n_type == N_EXT)
+			printf("%16.x U %s\n", 0, string_table + array[i].n_un.n_strx);
+		else
+			printf("%016llx %hhu %s\n", array[i].n_value, array[i].n_type, string_table + array[i].n_un.n_strx);
 	}
 }
 
+/*struct mach_header_64 {
+**	uint32_t	magic;		 	-->mach magic number identifier
+**	cpu_type_t	cputype;		--> cpu specifier
+**	cpu_subtype_t	cpusubtype;	--> machine specifier
+**	uint32_t	filetype;		--> type of file
+**	uint32_t	ncmds;			--> number of load commands
+**	uint32_t	sizeofcmds;		--> the size of all the load commands
+**	uint32_t	flags;			--> flags 
+**	uint32_t	reserved;		--> reserved 
+**};
+*/
+
+/*
+**struct load_command {
+**	uint32_t cmd;		--> type of load command
+**	uint32_t cmdsize;	--> total size of command in bytes
+**};
+*/
+
+/*
+ * The symtab_command contains the offsets and sizes of the link-edit 4.3BSD
+ * "stab" style symbol table information as described in the header files
+ * <nlist.h> and <stab.h>.
+**
+**
+**struct symtab_command {
+**	uint32_t	cmd;		--> LC_SYMTAB
+**	uint32_t	cmdsize;	--> sizeof(struct symtab_command)
+**	uint32_t	symoff;		--> symbol table offset
+**	uint32_t	nsyms;		--> number of symbol table entries
+**	uint32_t	stroff;		--> string table offset
+**	uint32_t	strsize;	--> string table size in bytes
+**};
+*/
 
 void	handle_64(char *ptr)
 {
@@ -45,9 +92,11 @@ void	handle_64(char *ptr)
 	lc = (void *)ptr + sizeof(*header);
 	for (i = 0 ; ncmds > i ; ++i)
 	{
+		printf("PLOOOOOOOOOOOOOOOP <------------\n");
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
+			printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
 			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
 			break ;
 		}
@@ -74,12 +123,22 @@ int		main(int ac, char **av)
 	struct stat	buf;
 
 	fd = 0;
-	if (ac == 2)
+	
+	if (ac != 2)
 	{
-		fd = open(av[1], O_RDONLY);
+		ft_printf("Please give me argument :(.\n");
+		return (EXIT_FAILURE);
+	}
+	if ((fd = open(av[1], O_RDONLY)) < 0)
+	{
+		perror("open");
+		return(EXIT_FAILURE);
 	}
 	if ((fstat(fd, &buf)) < 0)
-		return (0);
+	{
+		perror("fstat");
+		return (EXIT_FAILURE);
+	}
 	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 	{
 		perror("mmap");
@@ -91,5 +150,5 @@ int		main(int ac, char **av)
 		perror("munmap");
 		return (EXIT_FAILURE);
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }
