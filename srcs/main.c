@@ -17,11 +17,52 @@
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
 
-
+/*
 void	print_symbol(int type)
 {
 
+}*/
+
+// void	sort_array(void *array, int nsyms, char *st)
+void	sort_array(struct nlist_64 *array, int nsyms, char *st)
+{
+	int				x;
+	int				y;
+	// void			*swap;
+	struct nlist_64 *swap;
+
+	x = 1;
+	swap = malloc(sizeof(struct nlist_64));
+	while (x < (nsyms - 1))
+	{		
+		y = 0;
+		while (y < 10)
+		{
+			printf("plop\n");
+			printf("%c --> %c\n", (st + array[x].n_un.n_strx)[y] ,(st + array[x + 1].n_un.n_strx)[y]);
+			printf("plop\n");
+			// if ((st + (struct nlist_64*)array[x].n_un.n_strx + y) > (st + (struct nlist_64*)array[x + 1].n_un.n_strx + y))
+			if ((st + array[x].n_un.n_strx)[y] > (st + array[x + 1].n_un.n_strx)[y])
+			{
+				printf("%c --> %c\n", (st + array[x].n_un.n_strx)[y] ,(st + array[x + 1].n_un.n_strx)[y]);
+				printf("PPLLPOPO\n");
+				// swap = &array[x];
+				// array[x] = array[x + 1];
+				// array[x + 1] = *swap;
+				ft_memcpy(swap , &array[x], sizeof(struct nlist_64));
+				printf("UN\n");
+				ft_memcpy(&array[x] ,&array[x + 1], sizeof(struct nlist_64));
+				printf("deux\n");
+				ft_memcpy(&array[x + 1] ,&swap, sizeof(struct nlist_64));
+				printf("trois\n");
+			}
+			y++;
+		}
+		x++;
+	}
 }
+
+
 
 void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 {
@@ -31,6 +72,7 @@ void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 
 	array = (void *)ptr + symoff;
 	string_table = (void *)ptr + stroff;
+	//sort_array(array, nsyms, string_table);
 	for (i = 0; i < nsyms; ++i)
 	{
 		if (array[i].n_type == 15)
@@ -92,11 +134,11 @@ void	handle_64(char *ptr)
 	lc = (void *)ptr + sizeof(*header);
 	for (i = 0 ; ncmds > i ; ++i)
 	{
-		printf("PLOOOOOOOOOOOOOOOP <------------\n");
+	//	printf("PLOOOOOOOOOOOOOOOP <------------\n");
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
+		//	printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
 			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
 			break ;
 		}
@@ -113,6 +155,10 @@ void	nm(char *ptr)
 	{
 		puts("c'est du 64 !!");
 		handle_64(ptr);
+	}
+	else if (magic_number == MH_MAGIC)
+	{
+		puts("c'est du 32 !!");
 	}
 }
 
@@ -139,7 +185,7 @@ int		main(int ac, char **av)
 		perror("fstat");
 		return (EXIT_FAILURE);
 	}
-	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+	if ((ptr = mmap(0, buf.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
 	{
 		perror("mmap");
 		return (EXIT_FAILURE);
