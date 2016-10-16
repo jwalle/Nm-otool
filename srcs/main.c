@@ -42,7 +42,7 @@ void	sort_array(struct nlist_64 *array, int nsyms, char *st)
 			printf("%c --> %c\n", (st + array[x].n_un.n_strx)[y] ,(st + array[x + 1].n_un.n_strx)[y]);
 			printf("plop\n");
 			// if ((st + (struct nlist_64*)array[x].n_un.n_strx + y) > (st + (struct nlist_64*)array[x + 1].n_un.n_strx + y))
-			if ((st + array[x].n_un.n_strx)[y] > (st + array[x + 1].n_un.n_strx)[y])
+			if (ft_strcmp((st + array[x].n_un.n_strx),  (st + array[x + 1].n_un.n_strx)) > 0)
 			{
 				printf("%c --> %c\n", (st + array[x].n_un.n_strx)[y] ,(st + array[x + 1].n_un.n_strx)[y]);
 				printf("PPLLPOPO\n");
@@ -62,9 +62,27 @@ void	sort_array(struct nlist_64 *array, int nsyms, char *st)
 	}
 }
 
+char		get_type(struct nlist_64 *array, int i)
+{
+	if (array[i].n_type == 1)
+		return ('U');	
+	else
+		return ('?');
+}
 
+t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
+{
+	t_list64	*new;
 
-void	print_output(int nsyms, int symoff, int stroff, char *ptr)
+	if (!(new = malloc(sizeof(t_list64))))
+		return (NULL);
+	new->value = array[i].n_value;
+	new->name = ft_strdup(st + array[i].n_un.n_strx);
+	new->type = get_type(array, i);
+	return (new);	
+}
+
+void	print_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 {
 	int				i;
 	char			*string_table;
@@ -72,8 +90,27 @@ void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 
 	array = (void *)ptr + symoff;
 	string_table = (void *)ptr + stroff;
-	//sort_array(array, nsyms, string_table);
 	for (i = 0; i < nsyms; ++i)
+	{
+		e->lists = ft_lst_push(e->lists, stock_symbols(array, string_table, i));
+		
+		//printf("PLLLLOPOPOPOP <---------------------\n");
+	}
+	//sort_array(array, nsyms, string_table);
+
+	t_list		*list;
+	t_list64	*current;
+
+	list = e->lists;
+	while(list)
+	{
+		current = (t_list64*)list->data;
+		printf("%016x %c %s\n", current->value, current->type, current->name);
+		list = list->next;
+	}
+
+
+	/*for (i = 0; i < nsyms; ++i)
 	{
 		if (array[i].n_type == 15)
 			printf("%016llx T %s\n", array[i].n_value, string_table + array[i].n_un.n_strx);
@@ -83,7 +120,7 @@ void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 			printf("%16.x U %s\n", 0, string_table + array[i].n_un.n_strx);
 		else
 			printf("%016llx %hhu %s\n", array[i].n_value, array[i].n_type, string_table + array[i].n_un.n_strx);
-	}
+	}*/
 }
 
 /*struct mach_header_64 {
@@ -121,7 +158,7 @@ void	print_output(int nsyms, int symoff, int stroff, char *ptr)
 **};
 */
 
-void	handle_64(char *ptr)
+void	handle_64(char *ptr, t_nm_env *e)
 {
 	int						i;
 	int						ncmds;
@@ -139,14 +176,14 @@ void	handle_64(char *ptr)
 		{
 			sym = (struct symtab_command *)lc;
 		//	printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
-			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
+			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
 			break ;
 		}
 		lc = (void *)lc + lc->cmdsize;
 	}
 }
 
-void	nm(char *ptr)
+void	nm(char *ptr, t_nm_env *e)
 {
 	unsigned int magic_number;
 
@@ -154,7 +191,7 @@ void	nm(char *ptr)
 	if (magic_number == MH_MAGIC_64)
 	{
 		puts("c'est du 64 !!");
-		handle_64(ptr);
+		handle_64(ptr, e);
 	}
 	else if (magic_number == MH_MAGIC)
 	{
@@ -164,12 +201,15 @@ void	nm(char *ptr)
 
 int		main(int ac, char **av)
 {
-	int 		fd;
-	char		*ptr;
-	struct stat	buf;
+	int 			fd;
+	char			*ptr;
+	struct stat		buf;
+	t_nm_env		*e;
 
 	fd = 0;
-	
+	e = (t_nm_env *)malloc(sizeof(t_nm_env));
+	e->lists = NULL;
+		// return (EXIT_FAILURE);
 	if (ac != 2)
 	{
 		ft_printf("Please give me argument :(.\n");
@@ -190,7 +230,7 @@ int		main(int ac, char **av)
 		perror("mmap");
 		return (EXIT_FAILURE);
 	}
-	nm(ptr);
+	nm(ptr, e);
 	if (munmap(ptr, buf.st_size) < 0)
 	{
 		perror("munmap");
