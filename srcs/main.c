@@ -17,55 +17,14 @@
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
 
-/*
-void	print_symbol(int type)
-{
-
-}*/
-
-// void	sort_array(void *array, int nsyms, char *st)
-void	sort_array(struct nlist_64 *array, int nsyms, char *st)
-{
-	int				x;
-	int				y;
-	// void			*swap;
-	struct nlist_64 *swap;
-
-	x = 1;
-	swap = malloc(sizeof(struct nlist_64));
-	while (x < (nsyms - 1))
-	{		
-		y = 0;
-		while (y < 10)
-		{
-			printf("plop\n");
-			printf("%c --> %c\n", (st + array[x].n_un.n_strx)[y] ,(st + array[x + 1].n_un.n_strx)[y]);
-			printf("plop\n");
-			// if ((st + (struct nlist_64*)array[x].n_un.n_strx + y) > (st + (struct nlist_64*)array[x + 1].n_un.n_strx + y))
-			if (ft_strcmp((st + array[x].n_un.n_strx),  (st + array[x + 1].n_un.n_strx)) > 0)
-			{
-				printf("%c --> %c\n", (st + array[x].n_un.n_strx)[y] ,(st + array[x + 1].n_un.n_strx)[y]);
-				printf("PPLLPOPO\n");
-				// swap = &array[x];
-				// array[x] = array[x + 1];
-				// array[x + 1] = *swap;
-				ft_memcpy(swap , &array[x], sizeof(struct nlist_64));
-				printf("UN\n");
-				ft_memcpy(&array[x] ,&array[x + 1], sizeof(struct nlist_64));
-				printf("deux\n");
-				ft_memcpy(&array[x + 1] ,&swap, sizeof(struct nlist_64));
-				printf("trois\n");
-			}
-			y++;
-		}
-		x++;
-	}
-}
-
 char		get_type(struct nlist_64 *array, int i)
 {
 	if (array[i].n_type == 1)
-		return ('U');	
+		return ('U');
+	else if (array[i].n_type == 15)
+		return ('T');
+	//	if (array[i].n_type == 1)
+	//	return ('U');
 	else
 		return ('?');
 }
@@ -77,51 +36,50 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 	if (!(new = malloc(sizeof(t_list64))))
 		return (NULL);
 	new->value = array[i].n_value;
+
+	//printf("plop = %s\n", st + array[i].n_un.n_strx);
+
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->type = get_type(array, i);
 	return (new);	
 }
 
-void	print_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
+void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 {
 	int				i;
 	char			*string_table;
 	struct nlist_64	*array;
 
+	i = 0;
 	array = (void *)ptr + symoff;
 	string_table = (void *)ptr + stroff;
-	for (i = 0; i < nsyms; ++i)
+	while (i < nsyms)
 	{
+		printf("plop = %s\n", string_table + array[i].n_un.n_strx);
 		e->lists = ft_lst_push(e->lists, stock_symbols(array, string_table, i));
-		
-		//printf("PLLLLOPOPOPOP <---------------------\n");
+		i++;
 	}
-	//sort_array(array, nsyms, string_table);
+}
 
-	t_list		*list;
-	t_list64	*current;
+void	print_output(t_nm_env *e)
+{
+	t_list			*list;
+	t_list64		*current;
 
 	list = e->lists;
-	merge_sort(&list);
 	while(list)
 	{
 		current = (t_list64*)list->data;
-		printf("%016x %c %s\n", current->value, current->type, current->name);
+		if (current->type == 'U')
+			printf("%16.x %c %s\n", 0, current->type, current->name);
+		/*else if (current->type == '?')
+			printf("%016x %c %s\n", 0, current->type, current->name);
+		else if (current->type == 'T')
+			printf("%016x %c %s\n", 0, current->type, current->name);*/
+		else
+			printf("%016x %c %s <------------\n", current->value, current->type, current->name);
 		list = list->next;
 	}
-
-
-	/*for (i = 0; i < nsyms; ++i)
-	{
-		if (array[i].n_type == 15)
-			printf("%016llx T %s\n", array[i].n_value, string_table + array[i].n_un.n_strx);
-		else if (array[i].n_type == 14)
-			printf("%016llx t %s\n", array[i].n_value, string_table + array[i].n_un.n_strx);
-		else if (array[i].n_type == N_EXT)
-			printf("%16.x U %s\n", 0, string_table + array[i].n_un.n_strx);
-		else
-			printf("%016llx %hhu %s\n", array[i].n_value, array[i].n_type, string_table + array[i].n_un.n_strx);
-	}*/
 }
 
 /*struct mach_header_64 {
@@ -172,12 +130,13 @@ void	handle_64(char *ptr, t_nm_env *e)
 	lc = (void *)ptr + sizeof(*header);
 	for (i = 0 ; ncmds > i ; ++i)
 	{
-	//	printf("PLOOOOOOOOOOOOOOOP <------------\n");
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-		//	printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
-			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
+			printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
+			stock_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
+			merge_sort(&e->lists);
+			print_output(e);
 			break ;
 		}
 		lc = (void *)lc + lc->cmdsize;
