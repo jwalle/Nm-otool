@@ -6,7 +6,7 @@
 #    By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/07/09 15:06:36 by jwalle            #+#    #+#              #
-#    Updated: 2016/10/13 16:15:17 by jwalle           ###   ########.fr        #
+#    Updated: 2016/10/21 16:17:51 by jwalle           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,7 @@ WHT = tput setaf 7
 RESET = tput sgr 0
 
 SRC = main.c \
+	  sort.c \
 
 OBJ		=	$(SRC:.c=.o)
 OBJS	= 	$(addprefix $(ODIR), $(OBJ))

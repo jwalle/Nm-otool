@@ -102,6 +102,7 @@ void	print_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 	t_list64	*current;
 
 	list = e->lists;
+	merge_sort(&list);
 	while(list)
 	{
 		current = (t_list64*)list->data;

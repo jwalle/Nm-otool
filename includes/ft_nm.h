@@ -23,8 +23,6 @@
 # include "libft.h"
 # include "ft_printf.h"
 
-
-
 typedef	struct		s_list64
 {
 	uint32_t		value;
@@ -38,5 +36,7 @@ typedef	struct		s_nm_env
 	int				plop;
 	t_list			*lists;
 }					t_nm_env;
+
+void				merge_sort(t_list **ref);
 
 # endif
