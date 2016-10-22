@@ -19,14 +19,31 @@
 
 char		get_type(struct nlist_64 *array, int i)
 {
-	if (array[i].n_type == 1)
-		return ('U');
-	else if (array[i].n_type == 15)
-		return ('T');
+	char	c;
+	char	mask;
+	char	ret;
+
+	c = array[i].n_type;
+	mask = c & N_TYPE;
+	ret = '?';
+
+	if (mask == N_UNDF)
+	{
+		ret = 'u';
+		if (array[i].n_value != 0)
+			ret = 'c';
+	}
+	else if (mask == N_PBUD)
+		ret = 'u';
+	else if (mask == N_ABS)
+		ret = 'a';
+	else if (mask == N_SECT)
+		ret = 'u';
+	if (1 && ret != '?')
+		ft_toupper(ret);
 	//	if (array[i].n_type == 1)
 	//	return ('U');
-	else
-		return ('?');
+	return (ret);
 }
 
 t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
@@ -38,7 +55,6 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 	new->value = array[i].n_value;
 
 	//printf("plop = %s\n", st + array[i].n_un.n_strx);
-
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->type = get_type(array, i);
 	return (new);	
@@ -55,10 +71,19 @@ void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 	string_table = (void *)ptr + stroff;
 	while (i < nsyms)
 	{
-		printf("plop = %s\n", string_table + array[i].n_un.n_strx);
-		e->lists = ft_lst_push(e->lists, stock_symbols(array, string_table, i));
+		if (array[i].n_un.n_strx > 1)
+		{
+			e->lists = ft_lst_push(e->lists, stock_symbols(array, string_table, i));
+			printf("plop = %s, %i, %i, %i, %i, (%d)\n", string_table + array[i].n_un.n_strx, array[i].n_type & N_STAB
+																	 , array[i].n_type & N_PEXT
+																	 , array[i].n_type & N_TYPE
+																	 , array[i].n_type & N_EXT
+																	 , array[i].n_un.n_strx);
+		
+		}
 		i++;
 	}
+	printf("%i, %i, %i, %i, %i\n", 0x0, 0x2, 0xe, 0xc, 0xa);
 }
 
 void	print_output(t_nm_env *e)
@@ -72,12 +97,14 @@ void	print_output(t_nm_env *e)
 		current = (t_list64*)list->data;
 		if (current->type == 'U')
 			printf("%16.x %c %s\n", 0, current->type, current->name);
-		/*else if (current->type == '?')
+		else if (current->type == '?')
 			printf("%016x %c %s\n", 0, current->type, current->name);
 		else if (current->type == 'T')
-			printf("%016x %c %s\n", 0, current->type, current->name);*/
+			printf("%016x %c %s\n", current->value, current->type, current->name);
 		else
 			printf("%016x %c %s <------------\n", current->value, current->type, current->name);
+		//puts(current->name);
+		//write(1, "\n", 1);
 		list = list->next;
 	}
 }
@@ -89,8 +116,8 @@ void	print_output(t_nm_env *e)
 **	uint32_t	filetype;		--> type of file
 **	uint32_t	ncmds;			--> number of load commands
 **	uint32_t	sizeofcmds;		--> the size of all the load commands
-**	uint32_t	flags;			--> flags 
-**	uint32_t	reserved;		--> reserved 
+**	uint32_t	flags;			--> flags
+**	uint32_t	reserved;		--> reserved
 **};
 */
 
