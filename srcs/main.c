@@ -38,11 +38,14 @@ char		get_type(struct nlist_64 *array, int i)
 	else if (mask == N_ABS)
 		ret = 'a';
 	else if (mask == N_SECT)
-		ret = 'u';
-	if (1 && ret != '?')
-		ft_toupper(ret);
+		ret = 't';
+	if ((c & N_EXT) && ret != '?')
+		ret = ft_toupper(ret);
+	// else
+		// ret = ft_tolower(ret);
 	//	if (array[i].n_type == 1)
 	//	return ('U');
+	printf("PLop = %c\n", ret);
 	return (ret);
 }
 
@@ -60,20 +63,47 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 	return (new);	
 }
 
+
+void	sort_output(t_nm_env *e)
+{
+	int	i;
+	int n;
+	t_list64 *temp;
+
+	i = 0;
+	n = e->stocked;
+	while (i < n - 1)
+	{
+		if (ft_strcmp(e->all[i]->name, e->all[i + 1]->name) < 1)
+		{
+			temp = e->all[i];
+			e->all[i] = e->all[i + 1];
+			e->all[i + 1] = temp;
+		}
+		i++;
+	}
+}
+
 void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 {
 	int				i;
+	int				j;
 	char			*string_table;
 	struct nlist_64	*array;
+	t_list64		**all;
 
 	i = 0;
+	j = 0;
 	array = (void *)ptr + symoff;
 	string_table = (void *)ptr + stroff;
+	all = (t_list64**)malloc(sizeof(t_list64*) * nsyms);
+	e->all = all;
 	while (i < nsyms)
 	{
 		if (array[i].n_un.n_strx > 1)
 		{
-			e->lists = ft_lst_push(e->lists, stock_symbols(array, string_table, i));
+			all[j] = stock_symbols(array, string_table, i);
+			j++;
 			printf("plop = %s, %i, %i, %i, %i, (%d)\n", string_table + array[i].n_un.n_strx, array[i].n_type & N_STAB
 																	 , array[i].n_type & N_PEXT
 																	 , array[i].n_type & N_TYPE
@@ -83,29 +113,26 @@ void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 		}
 		i++;
 	}
+	e->stocked = j;
 	printf("%i, %i, %i, %i, %i\n", 0x0, 0x2, 0xe, 0xc, 0xa);
 }
 
 void	print_output(t_nm_env *e)
 {
-	t_list			*list;
-	t_list64		*current;
+	int				i;
 
-	list = e->lists;
-	while(list)
+	i = 0;
+	while(i < e->stocked)
 	{
-		current = (t_list64*)list->data;
-		if (current->type == 'U')
-			printf("%16.x %c %s\n", 0, current->type, current->name);
-		else if (current->type == '?')
-			printf("%016x %c %s\n", 0, current->type, current->name);
-		else if (current->type == 'T')
-			printf("%016x %c %s\n", current->value, current->type, current->name);
+		if (e->all[i]->type == 'U')
+			printf("%16.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		else if (e->all[i]->type == '?')
+			printf("%016x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		else if (e->all[i]->type == 'T')
+			printf("%016x %c %s\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		else
-			printf("%016x %c %s <------------\n", current->value, current->type, current->name);
-		//puts(current->name);
-		//write(1, "\n", 1);
-		list = list->next;
+			printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		i++;
 	}
 }
 
@@ -162,7 +189,8 @@ void	handle_64(char *ptr, t_nm_env *e)
 			sym = (struct symtab_command *)lc;
 			printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
 			stock_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
-			merge_sort(&e->lists);
+			sort_output(e);
+			//merge_sort(&e->lists);
 			print_output(e);
 			break ;
 		}

@@ -35,6 +35,8 @@ typedef	struct		s_nm_env
 {
 	int				plop;
 	t_list			*lists;
+	t_list64		**all;
+	int				stocked;
 }					t_nm_env;
 
 void				merge_sort(t_list **ref);
