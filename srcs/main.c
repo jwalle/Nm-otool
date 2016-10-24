@@ -38,14 +38,22 @@ char		get_type(struct nlist_64 *array, int i)
 	else if (mask == N_ABS)
 		ret = 'a';
 	else if (mask == N_SECT)
-		ret = 't';
+	{
+		if (1)
+			ret = 't';
+		else if (2)
+			ret = 'd';
+		else if (2)
+			ret = 'b';
+		else
+			ret = 's';
+	}
 	if ((c & N_EXT) && ret != '?')
 		ret = ft_toupper(ret);
 	// else
 		// ret = ft_tolower(ret);
 	//	if (array[i].n_type == 1)
 	//	return ('U');
-	printf("PLop = %c\n", ret);
 	return (ret);
 }
 
@@ -57,7 +65,7 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 		return (NULL);
 	new->value = array[i].n_value;
 
-	//printf("plop = %s\n", st + array[i].n_un.n_strx);
+	// printf("plop = %s\n", st + array[i].n_un.n_strx);
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->type = get_type(array, i);
 	return (new);	
@@ -67,18 +75,24 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 void	sort_output(t_nm_env *e)
 {
 	int	i;
+	int	j;
 	int n;
 	t_list64 *temp;
 
 	i = 0;
 	n = e->stocked;
-	while (i < n - 1)
+	while (i < n)
 	{
-		if (ft_strcmp(e->all[i]->name, e->all[i + 1]->name) < 1)
+		j = 0;
+		while (j < n - 1)
 		{
-			temp = e->all[i];
-			e->all[i] = e->all[i + 1];
-			e->all[i + 1] = temp;
+			while (ft_strcmp(e->all[j]->name, e->all[j + 1]->name) > 0	)
+			{
+				 temp = e->all[j + 1];
+				 e->all[j + 1] = e->all[j];
+				 e->all[j] = temp;
+			}
+			j++;
 		}
 		i++;
 	}
@@ -104,11 +118,13 @@ void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 		{
 			all[j] = stock_symbols(array, string_table, i);
 			j++;
-			printf("plop = %s, %i, %i, %i, %i, (%d)\n", string_table + array[i].n_un.n_strx, array[i].n_type & N_STAB
-																	 , array[i].n_type & N_PEXT
-																	 , array[i].n_type & N_TYPE
-																	 , array[i].n_type & N_EXT
-																	 , array[i].n_un.n_strx);
+			printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
+													  , array[i].n_type & N_STAB
+													  , array[i].n_type & N_PEXT
+													  , array[i].n_type & N_TYPE
+													  , array[i].n_type & N_EXT
+													  , array[i].n_un.n_strx
+													  , array[i].n_sect);
 		
 		}
 		i++;
@@ -126,12 +142,12 @@ void	print_output(t_nm_env *e)
 	{
 		if (e->all[i]->type == 'U')
 			printf("%16.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-		else if (e->all[i]->type == '?')
-			printf("%016x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		//else if (e->all[i]->type == '?')
+		//	printf("%016x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
 		else if (e->all[i]->type == 'T')
-			printf("%016x %c %s\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		else
-			printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
+			printf("%08x%08x %c %s\n",1 , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		//else
+		//	printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;
 	}
 }
@@ -190,6 +206,7 @@ void	handle_64(char *ptr, t_nm_env *e)
 			printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
 			stock_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
 			sort_output(e);
+			//sort_output(e);
 			//merge_sort(&e->lists);
 			print_output(e);
 			break ;
