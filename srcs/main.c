@@ -17,12 +17,14 @@
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
 
-char		get_type(struct nlist_64 *array, int i)
+char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
 {
 	char	c;
 	char	mask;
 	char	ret;
+	int		n;
 
+	n = array[i].n_sect;
 	c = array[i].n_type;
 	mask = c & N_TYPE;
 	ret = '?';
@@ -39,11 +41,11 @@ char		get_type(struct nlist_64 *array, int i)
 		ret = 'a';
 	else if (mask == N_SECT)
 	{
-		if (1)
+		if (n == e->text)
 			ret = 't';
-		else if (2)
+		else if (n == e->data)
 			ret = 'd';
-		else if (2)
+		else if (n == e->bss)
 			ret = 'b';
 		else
 			ret = 's';
@@ -57,7 +59,7 @@ char		get_type(struct nlist_64 *array, int i)
 	return (ret);
 }
 
-t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
+t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e)
 {
 	t_list64	*new;
 
@@ -67,7 +69,7 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 
 	// printf("plop = %s\n", st + array[i].n_un.n_strx);
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
-	new->type = get_type(array, i);
+	new->type = get_type(array, i, e);
 	return (new);	
 }
 
@@ -115,7 +117,7 @@ void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 	{
 		if (array[i].n_un.n_strx > 1)
 		{
-			all[j] = stock_symbols(array, string_table, i);
+			all[j] = stock_symbols(array, string_table, i, e);
 			j++;
 			printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
@@ -141,12 +143,12 @@ void	print_output(t_nm_env *e)
 	{
 		if (e->all[i]->type == 'U')
 			printf("%16.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-		//else if (e->all[i]->type == '?')
-		//	printf("%016x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		else if (e->all[i]->type == '?')
+			printf("%016x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
 		else if (e->all[i]->type == 'T')
 			printf("%08x%08x %c %s\n",1 , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		//else
-		//	printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		else
+			printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;
 	}
 }
@@ -195,6 +197,7 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 {
 	int						i;
 	uint32_t				j;
+	int						nsect;
 	int						ncmds;
 	struct mach_header_64	*header;
 	struct load_command		*lc;
@@ -202,7 +205,7 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 	struct section_64			*s;
 	// struct ofile			*ofile;
 	
-	(void)e;
+	nsect = 0;
 	header = (struct mach_header_64*)ptr;
 	ncmds = header->ncmds;
 	lc = (void *)ptr + sizeof(*	header);
@@ -214,8 +217,15 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 			printf("%s, %d\n", sg->segname, sg->nsects);
 			s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
 			for (j = 0; j < sg->nsects ; j++)
-			{	
+			{
+				if (!ft_strcmp((s + j)->sectname, SECT_TEXT) && !ft_strcmp((s + j)->segname, SEG_TEXT))
+					e->text = nsect + 1;
+				else if (!ft_strcmp((s + j)->sectname, SECT_DATA) && !ft_strcmp((s + j)->segname, SEG_DATA))
+					e->data = nsect + 1;
+				else if (!ft_strcmp((s + j)->sectname, SECT_BSS) && !ft_strcmp((s + j)->segname, SEG_DATA))
+					e->bss = nsect + 1;
 				printf("(s + j)->sectname : %s\n", (s + j)->sectname);
+			nsect++;
 			}
 		}
 		lc = (void *)lc + lc->cmdsize;
@@ -259,7 +269,7 @@ void	nm(char *ptr, t_nm_env *e)
 	{
 		puts("c'est du 64 !!");
 		handle_stuff(ptr, e);
-		//handle_64(ptr, e);
+		handle_64(ptr, e);
 	}
 	else if (magic_number == MH_MAGIC)
 	{

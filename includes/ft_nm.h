@@ -33,7 +33,9 @@ typedef	struct		s_list64
 
 typedef	struct		s_nm_env
 {
-	int				plop;
+	int				text;
+	int				data;
+	int				bss;
 	t_list			*lists;
 	t_list64		**all;
 	int				stocked;
