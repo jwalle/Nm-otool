@@ -71,7 +71,6 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i)
 	return (new);	
 }
 
-
 void	sort_output(t_nm_env *e)
 {
 	int	i;
@@ -152,6 +151,9 @@ void	print_output(t_nm_env *e)
 	}
 }
 
+
+
+
 /*struct mach_header_64 {
 **	uint32_t	magic;		 	-->mach magic number identifier
 **	cpu_type_t	cputype;		--> cpu specifier
@@ -186,6 +188,39 @@ void	print_output(t_nm_env *e)
 **	uint32_t	strsize;	--> string table size in bytes
 **};
 */
+
+#define DEBUG printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
+
+void	handle_stuff(char *ptr, t_nm_env *e)
+{
+	int						i;
+	uint32_t				j;
+	int						ncmds;
+	struct mach_header_64	*header;
+	struct load_command		*lc;
+	struct segment_command_64	*sg;
+	struct section_64			*s;
+	// struct ofile			*ofile;
+	
+	(void)e;
+	header = (struct mach_header_64*)ptr;
+	ncmds = header->ncmds;
+	lc = (void *)ptr + sizeof(*	header);
+	for (i = 0 ; ncmds > i ; ++i)
+	{
+		if (lc->cmd == LC_SEGMENT_64)
+		{
+			sg = (struct segment_command_64 *)lc;
+			printf("%s, %d\n", sg->segname, sg->nsects);
+			s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
+			for (j = 0; j < sg->nsects ; j++)
+			{	
+				printf("(s + j)->sectname : %s\n", (s + j)->sectname);
+			}
+		}
+		lc = (void *)lc + lc->cmdsize;
+	}
+}
 
 void	handle_64(char *ptr, t_nm_env *e)
 {
@@ -223,7 +258,8 @@ void	nm(char *ptr, t_nm_env *e)
 	if (magic_number == MH_MAGIC_64)
 	{
 		puts("c'est du 64 !!");
-		handle_64(ptr, e);
+		handle_stuff(ptr, e);
+		//handle_64(ptr, e);
 	}
 	else if (magic_number == MH_MAGIC)
 	{
@@ -231,27 +267,12 @@ void	nm(char *ptr, t_nm_env *e)
 	}
 }
 
-int		main(int ac, char **av)
+int		process_file(int fd, t_nm_env *e)
 {
-	int 			fd;
-	char			*ptr;
 	struct stat		buf;
-	t_nm_env		*e;
+	char			*ptr;
 
-	fd = 0;
-	e = (t_nm_env *)malloc(sizeof(t_nm_env));
-	e->lists = NULL;
-		// return (EXIT_FAILURE);
-	if (ac != 2)
-	{
-		ft_printf("Please give me argument :(.\n");
-		return (EXIT_FAILURE);
-	}
-	if ((fd = open(av[1], O_RDONLY)) < 0)
-	{
-		perror("open");
-		return(EXIT_FAILURE);
-	}
+
 	if ((fstat(fd, &buf)) < 0)
 	{
 		perror("fstat");
@@ -269,4 +290,36 @@ int		main(int ac, char **av)
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
+}
+
+int		main(int ac, char **av)
+{
+	int 			fd;
+	t_nm_env		*e;
+
+	fd = 0;
+	e = (t_nm_env *)malloc(sizeof(t_nm_env));
+		// return (EXIT_FAILURE);
+	if (ac == 1)
+	{
+		if ((fd = open("a.out", O_RDONLY)) < 0)
+		{
+			perror("open");
+			return(EXIT_FAILURE);
+		}
+	}
+	else if (ac == 2)
+	{
+		if ((fd = open(av[1], O_RDONLY)) < 0)
+		{
+			perror("open");
+			return(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		ft_printf("Usage :\n"); //todo
+		return (EXIT_FAILURE);
+	}
+	return (process_file(fd, e));
 }
