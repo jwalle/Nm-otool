@@ -6,7 +6,7 @@
 /*   By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/07/12 13:44:08 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/13 16:35:32 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/26 16:09:37 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef	struct		s_list64
 	uint32_t		value;
 	char			*name;
 	char			type;
+	int				n_sect;
 }					t_list64;
 
 

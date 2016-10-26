@@ -6,7 +6,7 @@
 /*   By: jwalle <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/13 16:10:23 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/14 16:53:10 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/26 16:28:04 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e)
 	// printf("plop = %s\n", st + array[i].n_un.n_strx);
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->type = get_type(array, i, e);
+	new->n_sect = array[i].n_sect;
 	return (new);	
 }
 
@@ -119,19 +120,19 @@ void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 		{
 			all[j] = stock_symbols(array, string_table, i, e);
 			j++;
-			printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
+			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
 													  , array[i].n_type & N_PEXT
 													  , array[i].n_type & N_TYPE
 													  , array[i].n_type & N_EXT
 													  , array[i].n_un.n_strx
-													  , array[i].n_sect);
+													  , array[i].n_sect);*/
 		
 		}
 		i++;
 	}
 	e->stocked = j;
-	printf("%i, %i, %i, %i, %i\n", 0x0, 0x2, 0xe, 0xc, 0xa);
+	//printf("%i, %i, %i, %i, %i\n", 0x0, 0x2, 0xe, 0xc, 0xa);
 }
 
 void	print_output(t_nm_env *e)
@@ -141,14 +142,14 @@ void	print_output(t_nm_env *e)
 	i = 0;
 	while(i < e->stocked)
 	{
-		if (e->all[i]->type == 'U')
+		if (e->all[i]->type == 'U' || e->all[i]->type == 'u')
 			printf("%16.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-		else if (e->all[i]->type == '?')
-			printf("%016x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-		else if (e->all[i]->type == 'T')
+		//else if (e->all[i]->type == '?' && e->all[i]->value != 0)
+		//	printf("%016x %c %s\n", e->all[i]->n_sect, e->all[i]->type, e->all[i]->name);
+		else if (e->all[i]->type == 'T' || e->all[i]->type == 't' || e->all[i]->type == 's' || e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D' || e->all[i]->type == 'b' || e->all[i]->type == 'b')
 			printf("%08x%08x %c %s\n",1 , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		else
-			printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		//else
+		//	printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;
 	}
 }
@@ -214,7 +215,7 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 		if (lc->cmd == LC_SEGMENT_64)
 		{
 			sg = (struct segment_command_64 *)lc;
-			printf("%s, %d\n", sg->segname, sg->nsects);
+			//printf("%s, %d\n", sg->segname, sg->nsects);
 			s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
 			for (j = 0; j < sg->nsects ; j++)
 			{
@@ -224,7 +225,7 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 					e->data = nsect + 1;
 				else if (!ft_strcmp((s + j)->sectname, SECT_BSS) && !ft_strcmp((s + j)->segname, SEG_DATA))
 					e->bss = nsect + 1;
-				printf("(s + j)->sectname : %s\n", (s + j)->sectname);
+				//printf("(s + j)->sectname : %s\n", (s + j)->sectname);
 			nsect++;
 			}
 		}
@@ -248,7 +249,7 @@ void	handle_64(char *ptr, t_nm_env *e)
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
+			//printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
 			stock_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
 			sort_output(e);
 			//sort_output(e);
