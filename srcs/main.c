@@ -6,7 +6,7 @@
 /*   By: jwalle <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/13 16:10:23 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/26 16:28:04 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/26 18:21:10 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+#include <mach-o/fat.h>
 
 char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
 {
@@ -52,10 +53,6 @@ char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
 	}
 	if ((c & N_EXT) && ret != '?')
 		ret = ft_toupper(ret);
-	// else
-		// ret = ft_tolower(ret);
-	//	if (array[i].n_type == 1)
-	//	return ('U');
 	return (ret);
 }
 
@@ -66,8 +63,6 @@ t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e)
 	if (!(new = malloc(sizeof(t_list64))))
 		return (NULL);
 	new->value = array[i].n_value;
-
-	// printf("plop = %s\n", st + array[i].n_un.n_strx);
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->type = get_type(array, i, e);
 	new->n_sect = array[i].n_sect;
@@ -132,7 +127,6 @@ void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
 		i++;
 	}
 	e->stocked = j;
-	//printf("%i, %i, %i, %i, %i\n", 0x0, 0x2, 0xe, 0xc, 0xa);
 }
 
 void	print_output(t_nm_env *e)
@@ -204,7 +198,6 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 	struct load_command		*lc;
 	struct segment_command_64	*sg;
 	struct section_64			*s;
-	// struct ofile			*ofile;
 	
 	nsect = 0;
 	header = (struct mach_header_64*)ptr;
@@ -249,11 +242,8 @@ void	handle_64(char *ptr, t_nm_env *e)
 		if (lc->cmd == LC_SYMTAB)
 		{
 			sym = (struct symtab_command *)lc;
-			//printf("symtab command : nsyms = %d, symoff = %d, stroff = %d\n" , sym->nsyms, sym->symoff, sym->stroff);
 			stock_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
 			sort_output(e);
-			//sort_output(e);
-			//merge_sort(&e->lists);
 			print_output(e);
 			break ;
 		}
@@ -275,6 +265,14 @@ void	nm(char *ptr, t_nm_env *e)
 	else if (magic_number == MH_MAGIC)
 	{
 		puts("c'est du 32 !!");
+	}
+	else if (magic_number == FAT_MAGIC)
+	{
+		puts("c'est du FAT !!");
+	}
+	else if (magic_number == FAT_CIGAM)
+	{
+		puts("c'est du FAT_CIGAM... ? !!");
 	}
 }
 
