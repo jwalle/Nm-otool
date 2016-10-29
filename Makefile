@@ -6,7 +6,7 @@
 #    By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/07/09 15:06:36 by jwalle            #+#    #+#              #
-#    Updated: 2016/10/21 16:17:51 by jwalle           ###   ########.fr        #
+#    Updated: 2016/10/29 19:11:15 by jwalle           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,8 @@ RESET = tput sgr 0
 
 SRC = main.c \
 	  sort.c \
+	  handle_64.c \
+	  common_functions.c \
 
 OBJ		=	$(SRC:.c=.o)
 OBJS	= 	$(addprefix $(ODIR), $(OBJ))

@@ -6,12 +6,12 @@
 /*   By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/07/12 13:44:08 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/26 16:09:37 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/29 18:47:29 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_LS_H
-# define FT_LS_H
+#ifndef FT_NM_H
+# define FT_NM_H
 
 # include <unistd.h>
 # include <stdlib.h>
@@ -22,6 +22,16 @@
 # include <stdio.h>		//PRINTF A RETIRER
 # include "libft.h"
 # include "ft_printf.h"
+
+#include <stdio.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <mach-o/loader.h>
+#include <mach-o/nlist.h>
+#include <mach-o/fat.h>
+
+#define DEBUG printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
+
 
 typedef	struct		s_list64
 {
@@ -42,6 +52,13 @@ typedef	struct		s_nm_env
 	int				stocked;
 }					t_nm_env;
 
-void				merge_sort(t_list **ref);
+// void				handle_64(char *ptr, t_nm_env *e);
+void				handle_stuff_64(char *ptr, t_nm_env *e);
+void				handle_stuff_32(char *ptr, t_nm_env *e);
+t_list64			*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e);
+void				sort_output(t_nm_env *e);
+void				stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e);
+void				print_output(t_nm_env *e);
+char				get_type(struct nlist_64 *array, int i, t_nm_env *e);
 
 # endif

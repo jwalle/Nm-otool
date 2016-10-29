@@ -6,163 +6,24 @@
 /*   By: jwalle <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/13 16:10:23 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/29 18:26:41 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/29 18:47:31 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm.h"
-#include <stdio.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <mach-o/fat.h>
 
 /*
 **	/usr/include/mach-o/...
 */
 
-
-void	handle_64(char *ptr, t_nm_env *e);
-
-static void	handle_stuff_64(char *ptr, t_nm_env *e);
-
-static void	handle_stuff_32(char *ptr, t_nm_env *e);
-
 static	int	magic_number[] = { MH_MAGIC , MH_MAGIC_64, 0};
 
-static void	(*magic_functions[])(char*, t_nm_env*) = { handle_stuff_32 , handle_stuff_64 };
+void	(*magic_functions[])(char*, t_nm_env*) = { handle_stuff_32 , handle_stuff_64 };
+
+// void			handle_stuff_64(char *ptr, t_nm_env *e);
 
 
-char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
-{
-	char	c;
-	char	mask;
-	char	ret;
-	int		n;
 
-	n = array[i].n_sect;
-	c = array[i].n_type;
-	mask = c & N_TYPE;
-	ret = '?';
-
-	if (mask == N_UNDF)
-	{
-		ret = 'u';
-		if (array[i].n_value != 0)
-			ret = 'c';
-	}
-	else if (mask == N_PBUD)
-		ret = 'u';
-	else if (mask == N_ABS)
-		ret = 'a';
-	else if (mask == N_SECT)
-	{
-		if (n == e->text)
-			ret = 't';
-		else if (n == e->data)
-			ret = 'd';
-		else if (n == e->bss)
-			ret = 'b';
-		else
-			ret = 's';
-	}
-	if ((c & N_EXT) && ret != '?')
-		ret = ft_toupper(ret);
-	return (ret);
-}
-
-t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e)
-{
-	t_list64	*new;
-
-	if (!(new = malloc(sizeof(t_list64))))
-		return (NULL);
-	new->value = array[i].n_value;
-	new->name = ft_strdup(st + array[i].n_un.n_strx);
-	new->type = get_type(array, i, e);
-	new->n_sect = array[i].n_sect;
-	return (new);	
-}
-
-void	sort_output(t_nm_env *e)
-{
-	int	i;
-	int	j;
-	int n;
-	t_list64 *temp;
-
-	i = 0;
-	n = e->stocked;
-	while (i < n)
-	{
-		j = 0;
-		while (j < n - 1)
-		{
-			while (ft_strcmp(e->all[j]->name, e->all[j + 1]->name) > 0	)
-			{
-				 temp = e->all[j + 1];
-				 e->all[j + 1] = e->all[j];
-				 e->all[j] = temp;
-			}
-			j++;
-		}
-		i++;
-	}
-}
-
-void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
-{
-	int				i;
-	int				j;
-	char			*string_table;
-	struct nlist_64	*array;
-	t_list64		**all;
-
-	i = 0;
-	j = 0;
-	array = (void *)ptr + symoff;
-	string_table = (void *)ptr + stroff;
-	all = (t_list64**)malloc(sizeof(t_list64*) * nsyms);
-	e->all = all;
-	while (i < nsyms)
-	{
-		if (array[i].n_un.n_strx > 1)
-		{
-			all[j] = stock_symbols(array, string_table, i, e);
-			j++;
-			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
-													  , array[i].n_type & N_STAB
-													  , array[i].n_type & N_PEXT
-													  , array[i].n_type & N_TYPE
-													  , array[i].n_type & N_EXT
-													  , array[i].n_un.n_strx
-													  , array[i].n_sect);*/
-		
-		}
-		i++;
-	}
-	e->stocked = j;
-}
-
-void	print_output(t_nm_env *e)
-{
-	int				i;
-
-	i = 0;
-	while(i < e->stocked)
-	{
-		if (e->all[i]->type == 'U' || e->all[i]->type == 'u')
-			printf("%16.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-		//else if (e->all[i]->type == '?' && e->all[i]->value != 0)
-		//	printf("%016x %c %s\n", e->all[i]->n_sect, e->all[i]->type, e->all[i]->name);
-		else if (e->all[i]->type == 'T' || e->all[i]->type == 't' || e->all[i]->type == 's' || e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D' || e->all[i]->type == 'b' || e->all[i]->type == 'b')
-			printf("%08x%08x %c %s\n",1 , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		//else
-		//	printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		i++;
-	}
-}
 
 
 
@@ -202,80 +63,11 @@ void	print_output(t_nm_env *e)
 **};
 */
 
-#define DEBUG printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
-
 void	handle_stuff_32(char *ptr, t_nm_env *e)
 {
 	(void)ptr;
 	(void)e;
 	ft_printf("handle_stuff_32\n");
-}
-
-void	handle_stuff_64(char *ptr, t_nm_env *e)
-{
-	int						i;
-	uint32_t				j;
-	int						nsect;
-	int						ncmds;
-	struct mach_header_64	*header;
-	struct load_command		*lc;
-	struct segment_command_64	*sg;
-	struct section_64			*s;
-	
-	nsect = 0;
-	header = (struct mach_header_64*)ptr;
-	ncmds = header->ncmds;
-	lc = (void *)ptr + sizeof(*	header);
-	for (i = 0 ; ncmds > i ; ++i)
-	{
-		if (lc->cmd == LC_SEGMENT_64)
-		{
-			sg = (struct segment_command_64 *)lc;
-			//printf("%s, %d\n", sg->segname, sg->nsects);
-			s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
-			for (j = 0; j < sg->nsects ; j++)
-			{
-				if (!ft_strcmp((s + j)->sectname, SECT_TEXT) &&
-					!ft_strcmp((s + j)->segname, SEG_TEXT))
-					e->text = nsect + 1;
-				else if (!ft_strcmp((s + j)->sectname, SECT_DATA) &&
-						!ft_strcmp((s + j)->segname, SEG_DATA))
-					e->data = nsect + 1;
-				else if (!ft_strcmp((s + j)->sectname, SECT_BSS) &&
-						!ft_strcmp((s + j)->segname, SEG_DATA))
-					e->bss = nsect + 1;
-				//printf("(s + j)->sectname : %s\n", (s + j)->sectname);
-			nsect++;
-			}
-		}
-		lc = (void *)lc + lc->cmdsize;
-	}
-	handle_64(ptr, e);
-}
-
-void	handle_64(char *ptr, t_nm_env *e)
-{
-	int						i;
-	int						ncmds;
-	struct mach_header_64	*header;
-	struct load_command		*lc;
-	struct symtab_command	*sym;
-	
-	header = (struct mach_header_64 *)ptr;
-	ncmds = header->ncmds;
-	lc = (void *)ptr + sizeof(*header);
-	for (i = 0 ; ncmds > i ; ++i)
-	{
-		if (lc->cmd == LC_SYMTAB)
-		{
-			sym = (struct symtab_command *)lc;
-			stock_output(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
-			sort_output(e);
-			print_output(e);
-			break ;
-		}
-		lc = (void *)lc + lc->cmdsize;
-	}
 }
 
 void	nm(char *ptr, t_nm_env *e)
