@@ -6,7 +6,7 @@
 /*   By: jwalle <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/13 16:10:23 by jwalle            #+#    #+#             */
-/*   Updated: 2016/10/26 18:21:10 by jwalle           ###   ########.fr       */
+/*   Updated: 2016/10/29 18:26:41 by jwalle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,22 @@
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
 #include <mach-o/fat.h>
+
+/*
+**	/usr/include/mach-o/...
+*/
+
+
+void	handle_64(char *ptr, t_nm_env *e);
+
+static void	handle_stuff_64(char *ptr, t_nm_env *e);
+
+static void	handle_stuff_32(char *ptr, t_nm_env *e);
+
+static	int	magic_number[] = { MH_MAGIC , MH_MAGIC_64, 0};
+
+static void	(*magic_functions[])(char*, t_nm_env*) = { handle_stuff_32 , handle_stuff_64 };
+
 
 char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
 {
@@ -188,7 +204,14 @@ void	print_output(t_nm_env *e)
 
 #define DEBUG printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
 
-void	handle_stuff(char *ptr, t_nm_env *e)
+void	handle_stuff_32(char *ptr, t_nm_env *e)
+{
+	(void)ptr;
+	(void)e;
+	ft_printf("handle_stuff_32\n");
+}
+
+void	handle_stuff_64(char *ptr, t_nm_env *e)
 {
 	int						i;
 	uint32_t				j;
@@ -212,11 +235,14 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 			s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
 			for (j = 0; j < sg->nsects ; j++)
 			{
-				if (!ft_strcmp((s + j)->sectname, SECT_TEXT) && !ft_strcmp((s + j)->segname, SEG_TEXT))
+				if (!ft_strcmp((s + j)->sectname, SECT_TEXT) &&
+					!ft_strcmp((s + j)->segname, SEG_TEXT))
 					e->text = nsect + 1;
-				else if (!ft_strcmp((s + j)->sectname, SECT_DATA) && !ft_strcmp((s + j)->segname, SEG_DATA))
+				else if (!ft_strcmp((s + j)->sectname, SECT_DATA) &&
+						!ft_strcmp((s + j)->segname, SEG_DATA))
 					e->data = nsect + 1;
-				else if (!ft_strcmp((s + j)->sectname, SECT_BSS) && !ft_strcmp((s + j)->segname, SEG_DATA))
+				else if (!ft_strcmp((s + j)->sectname, SECT_BSS) &&
+						!ft_strcmp((s + j)->segname, SEG_DATA))
 					e->bss = nsect + 1;
 				//printf("(s + j)->sectname : %s\n", (s + j)->sectname);
 			nsect++;
@@ -224,6 +250,7 @@ void	handle_stuff(char *ptr, t_nm_env *e)
 		}
 		lc = (void *)lc + lc->cmdsize;
 	}
+	handle_64(ptr, e);
 }
 
 void	handle_64(char *ptr, t_nm_env *e)
@@ -253,27 +280,39 @@ void	handle_64(char *ptr, t_nm_env *e)
 
 void	nm(char *ptr, t_nm_env *e)
 {
-	unsigned int magic_number;
+	int				i;
+	int				magic_num;
 
-	magic_number = *(int *)ptr;
-	if (magic_number == MH_MAGIC_64)
+	i = 0;
+	magic_num = *(int *)ptr;
+
+	while (magic_number[i])
+	{
+		if (magic_num == magic_number[i])
+		{
+			magic_functions[i](ptr, e);
+		}
+		i++;
+	}
+
+	/*if (magic_num == MH_MAGIC_64)
 	{
 		puts("c'est du 64 !!");
-		handle_stuff(ptr, e);
-		handle_64(ptr, e);
+		handle_stuff_64(ptr, e);
+		//handle_64(ptr, e);
 	}
-	else if (magic_number == MH_MAGIC)
+	else if (magic_num == MH_MAGIC)
 	{
 		puts("c'est du 32 !!");
 	}
-	else if (magic_number == FAT_MAGIC)
+	else if (magic_num == FAT_MAGIC)
 	{
 		puts("c'est du FAT !!");
 	}
-	else if (magic_number == FAT_CIGAM)
+	else if (magic_num == FAT_CIGAM)
 	{
 		puts("c'est du FAT_CIGAM... ? !!");
-	}
+	}*/
 }
 
 int		process_file(int fd, t_nm_env *e)
