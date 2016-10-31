@@ -39,6 +39,7 @@ typedef	struct		s_list64
 	char			*name;
 	char			type;
 	int				n_sect;
+	char			n_type;
 }					t_list64;
 
 
@@ -59,6 +60,6 @@ t_list64			*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e);
 void				sort_output(t_nm_env *e);
 void				stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e);
 void				print_output(t_nm_env *e);
-char				get_type(struct nlist_64 *array, int i, t_nm_env *e);
+char				get_type(t_list64 *new, t_nm_env *e);
 
 # endif

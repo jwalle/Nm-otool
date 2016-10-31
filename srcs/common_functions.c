@@ -12,22 +12,22 @@
 
 #include "ft_nm.h"
 
-char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
+char		get_type(t_list64 *new, t_nm_env *e)
 {
 	char	c;
 	char	mask;
 	char	ret;
 	int		n;
 
-	n = array[i].n_sect;
-	c = array[i].n_type;
+	n = new->n_sect;
+	c = new->n_type;
 	mask = c & N_TYPE;
 	ret = '?';
 
 	if (mask == N_UNDF)
 	{
 		ret = 'u';
-		if (array[i].n_value != 0)
+		if (new->value != 0)
 			ret = 'c';
 	}
 	else if (mask == N_PBUD)
@@ -48,19 +48,6 @@ char		get_type(struct nlist_64 *array, int i, t_nm_env *e)
 	if ((c & N_EXT) && ret != '?')
 		ret = ft_toupper(ret);
 	return (ret);
-}
-
-t_list64	*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e)
-{
-	t_list64	*new;
-
-	if (!(new = malloc(sizeof(t_list64))))
-		return (NULL);
-	new->value = array[i].n_value;
-	new->name = ft_strdup(st + array[i].n_un.n_strx);
-	new->type = get_type(array, i, e);
-	new->n_sect = array[i].n_sect;
-	return (new);	
 }
 
 void	sort_output(t_nm_env *e)
@@ -87,40 +74,6 @@ void	sort_output(t_nm_env *e)
 		}
 		i++;
 	}
-}
-
-void	stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e)
-{
-	int				i;
-	int				j;
-	char			*string_table;
-	struct nlist_64	*array;
-	t_list64		**all;
-
-	i = 0;
-	j = 0;
-	array = (void *)ptr + symoff;
-	string_table = (void *)ptr + stroff;
-	all = (t_list64**)malloc(sizeof(t_list64*) * nsyms);
-	e->all = all;
-	while (i < nsyms)
-	{
-		if (array[i].n_un.n_strx > 1)
-		{
-			all[j] = stock_symbols(array, string_table, i, e);
-			j++;
-			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
-													  , array[i].n_type & N_STAB
-													  , array[i].n_type & N_PEXT
-													  , array[i].n_type & N_TYPE
-													  , array[i].n_type & N_EXT
-													  , array[i].n_un.n_strx
-													  , array[i].n_sect);*/
-		
-		}
-		i++;
-	}
-	e->stocked = j;
 }
 
 void	print_output(t_nm_env *e)

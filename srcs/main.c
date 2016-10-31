@@ -20,13 +20,6 @@ static	int	magic_number[] = { MH_MAGIC , MH_MAGIC_64, 0};
 
 void	(*magic_functions[])(char*, t_nm_env*) = { handle_stuff_32 , handle_stuff_64 };
 
-void	handle_stuff_32(char *ptr, t_nm_env *e)
-{
-	(void)ptr;
-	(void)e;
-	ft_printf("handle_stuff_32\n");
-}
-
 void	nm(char *ptr, t_nm_env *e)
 {
 	int				i;
