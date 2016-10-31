@@ -19,10 +19,7 @@ t_list64	*stock_symbols_64(struct nlist_64 *array, char *st, int i, t_nm_env *e)
 	if (!(new = malloc(sizeof(t_list64))))
 		return (NULL);	
 	new->value = array[i].n_value;
-	DEBUG;
-	printf("%d\n", array[i].n_un.n_strx);
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
-	DEBUG;
 	new->n_sect = array[i].n_sect;
 	new->n_type = array[i].n_type;
 	new->type = get_type(new, e);
@@ -47,9 +44,7 @@ static void	stock_output_64(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	{
 		if (array[i].n_un.n_strx > 1 && array[i].n_sect > 0)
 		{
-			DEBUG;
 			all[j] = stock_symbols_64(array, string_table, i, e);
-			DEBUG;
 			j++;
 			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
@@ -126,6 +121,7 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 	nsect = 0;
 	header = (struct mach_header_64*)ptr;
 	lc = (void *)ptr + sizeof(*	header);
+	e->cpu = 64;
 	for (i = 0 ; header->ncmds > i ; ++i)
 	{
 		if (lc->cmd == LC_SEGMENT_64)

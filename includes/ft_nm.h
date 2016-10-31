@@ -46,6 +46,7 @@ typedef	struct		s_list64
 typedef	struct		s_nm_env
 {
 	int				text;
+	int				cpu;
 	int				data;
 	int				bss;
 	t_list			*lists;

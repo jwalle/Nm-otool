@@ -83,12 +83,26 @@ void	print_output(t_nm_env *e)
 	i = 0;
 	while(i < e->stocked)
 	{
+		if (e->all[i]->type == 'U' && e->all[i]->type == 'u' && e->cpu == 64)
+			ft_printf("");
 		if (e->all[i]->type == 'U' || e->all[i]->type == 'u')
-			printf("%16.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		{
+			if (e->cpu == 32)
+				printf("%8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 64)
+				printf("        %8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		}
 		//else if (e->all[i]->type == '?' && e->all[i]->value != 0)
 		//	printf("%016x %c %s\n", e->all[i]->n_sect, e->all[i]->type, e->all[i]->name);
-		else if (e->all[i]->type == 'T' || e->all[i]->type == 't' || e->all[i]->type == 's' || e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D' || e->all[i]->type == 'b' || e->all[i]->type == 'b')
-			printf("%08x%08x %c %s\n",1 , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		else if (e->all[i]->type == 'T' || e->all[i]->type == 't' || e->all[i]->type == 's'
+			|| e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D'
+			|| e->all[i]->type == 'b' || e->all[i]->type == 'b')
+		{
+			if (e->cpu == 64)
+				printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 32)
+			printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		}
 		//else
 		//	printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;

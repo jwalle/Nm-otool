@@ -19,10 +19,7 @@ t_list64	*stock_symbols_32(struct nlist *array, char *st, int i, t_nm_env *e)
 	if (!(new = malloc(sizeof(t_list64))))
 		return (NULL);	
 	new->value = array[i].n_value;
-	DEBUG;
-	printf("%d\n", array[i].n_un.n_strx);
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
-	DEBUG;
 	new->n_sect = array[i].n_sect;
 	new->n_type = array[i].n_type;
 	new->type = get_type(new, e);
@@ -45,11 +42,9 @@ static void	stock_output_32(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	e->all = all;
 	while (i < nsyms)
 	{
-		if (array[i].n_un.n_strx > 1 && array[i].n_sect > 0)
+		if (array[i].n_un.n_strx > 1)
 		{
-			DEBUG;
 			all[j] = stock_symbols_32(array, string_table, i, e);
-			DEBUG;
 			j++;
 			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
@@ -102,7 +97,6 @@ static void	find_sector_and_segment_32(struct load_command *lc, t_nm_env *e)
 	s = (struct section *)((char *)sg + sizeof(struct segment_command));
 	for (j = 0; j < sg->nsects ; j++)
 	{
-		DEBUG;
 		if (!ft_strcmp((s + j)->sectname, SECT_TEXT) &&
 			!ft_strcmp((s + j)->segname, SEG_TEXT))
 			e->text = nsect + 1;
@@ -126,8 +120,8 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 	
 	nsect = 0;
 	header = (struct mach_header*)ptr;
-	DEBUG;
 	lc = (void *)ptr + sizeof(*	header);
+	e->cpu = 32;
 	for (i = 0 ; header->ncmds > i ; ++i)
 	{		
 		if (lc->cmd == LC_SEGMENT)
@@ -138,7 +132,6 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 		}
 		lc = (void *)lc + lc->cmdsize;
 	}
-	DEBUG ;
 	handle_32(ptr, e);
 	printf("32 !\n");
 }
