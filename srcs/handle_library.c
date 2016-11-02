@@ -11,25 +11,52 @@
 /* ************************************************************************** */
 
 #include "ft_nm.h"
-#include <mach/machine.h>
+
+#define __LP64__ 1
 
 void		handle_stuff_library(char *ptr, t_nm_env *e)
 {
 	unsigned int		i;
+	char				*str;
+	struct ar_hdr		*ar;
+	struct ranlib		*ran;
 	// struct ranlib		*rlib;
-	struct fat_header		*f_header;
-	struct mach_header_64	*m_header;
-	// struct fat_arch			*arch;
 
 	i = 0;
+	int start = 60 + 6 + 494;
 
-	f_header = (struct fat_header*)ptr;
-	m_header = (struct mach_header_64*)ptr + sizeof(f_header);
+	start = 0;
 
-	printf("ncmd = %d\n", m_header->ncmds);
-	// arch = (struct fat_arch*)ptr + sizeof(header);
-	// printf(" magic = %u\n", header->nfat_arch);
-	// printf(" cpu = %u\n", arch->cputype);
+
+	//str = strndup(ptr, SARMAG);
+	// puts(str);
+	str = (void *)ptr + SARMAG + 60;
+	if (!ft_strcmp(str, SYMDEF_SORTED))
+		puts("SYMDEF !!!!!!!!!!");
+	ran = (void*)str + ft_strlen(SYMDEF_SORTED);
+	//ran = (struct ranlib*)ran + 1;
+	
+	ar = (void *)ptr + SARMAG;
+
+	ar = (struct ar_hdr*)ar + 10;
+	
+	while (i < 10000)
+	{
+		if (ptr[i + start] == 0)
+			ft_putchar('0');
+		else if (isprint(ptr[i + start]))
+			ft_putchar(ptr[i + start]);
+		else
+			ft_putchar('.');
+		i++;
+	}
+	i = 59;
+	while (--i > 0)
+	printf("\nran : %s\n",ptr + ran[i].ran_off + sizeof(struct ar_hdr));
+
+	//printf("\nran : %s\n", ran[0].ran_un.stroff);
+	//printf("\nar->name : %s, time : %d\n", ar->ar_name, (int)ar->ar_gid);
+	//printf("PLOLOLOOOLLP\n");
 	// nsect = 0;
 	// header = (struct mach_header*)ptr;
 	// lc = (void *)ptr + sizeof(*	header);

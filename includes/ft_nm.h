@@ -30,6 +30,8 @@
 #include <mach-o/nlist.h>
 #include <mach-o/fat.h>
 #include <mach-o/ranlib.h>
+#include <ar.h>
+
 
 #define DEBUG printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
 
