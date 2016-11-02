@@ -12,8 +12,6 @@
 
 #include "ft_nm.h"
 
-#define __LP64__ 1
-
 void		handle_stuff_library(char *ptr, t_nm_env *e)
 {
 	unsigned int		i;
@@ -40,7 +38,7 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 
 	ar = (struct ar_hdr*)ar + 10;
 	
-	while (i < 10000)
+	while (i < 100000)
 	{
 		if (ptr[i + start] == 0)
 			ft_putchar('0');
@@ -51,9 +49,10 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 		i++;
 	}
 	i = 59;
-	while (--i > 0)
-	printf("\nran : %s\n",ptr + ran[i].ran_off + sizeof(struct ar_hdr));
-
+	/*while (--i > 0)
+	{
+		printf("\nran : %s\n",ptr + ran[i].ran_off + sizeof(struct ar_hdr));
+	}*/
 	//printf("\nran : %s\n", ran[0].ran_un.stroff);
 	//printf("\nar->name : %s, time : %d\n", ar->ar_name, (int)ar->ar_gid);
 	//printf("PLOLOLOOOLLP\n");
