@@ -64,7 +64,7 @@ void	sort_output(t_nm_env *e)
 		j = 0;
 		while (j < n - 1)
 		{
-			while (ft_strcmp(e->all[j]->name, e->all[j + 1]->name) > 0	)
+			while (ft_strcmp(e->all[j]->name, e->all[j + 1]->name) > 0)
 			{
 				 temp = e->all[j + 1];
 				 e->all[j + 1] = e->all[j];

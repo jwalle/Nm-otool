@@ -80,5 +80,6 @@ void				sort_output(t_nm_env *e);
 void				stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e);
 void				print_output(t_nm_env *e);
 char				get_type(t_list64 *new, t_nm_env *e);
+void				nm(char *ptr, t_nm_env *e);
 
 # endif

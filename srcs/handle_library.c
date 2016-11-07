@@ -12,65 +12,78 @@
 
 #include "ft_nm.h"
 
-void		handle_stuff_library(char *ptr, t_nm_env *e)
+#define AR_HDR_SIZE	sizeof(struct ar_hdr)
+#define RAN_SIZE sizeof(struct ranlib)
+
+void		print_library(void *ptr, struct ranlib *ran, unsigned int n, t_nm_env *e)
 {
-	unsigned int		i;
-	char				*str;
-	struct ar_hdr		*ar;
-	struct ranlib		*ran;
-	// struct ranlib		*rlib;
+	while (--n > 0)
+	{
+		ft_printf("filename.a(%s):\n", ptr + ran[n].ran_off + AR_HDR_SIZE);
+		nm(ptr + ran[n].ran_off + 80, e);
+		ft_putchar('\n');
+
+	}
+}
+
+void		sort_library(void *ptr, struct ranlib *ran, unsigned int n)
+{
+	unsigned int i;
+	unsigned int j;
+	struct ranlib temp;
+
+	printf("sorting :\n");
 
 	i = 0;
-	int start = 60 + 6 + 494;
+	// printf("name : %s\n", ptr + ran[i - 1].ran_off + AR_HDR_SIZE);
+	while (i < n)
+	{
+		j = 0;
+		while(j < n - 1)
+		{
+			while (ft_strcmp(ptr + ran[j].ran_off + AR_HDR_SIZE, ptr + ran[j + 1].ran_off + AR_HDR_SIZE) > 0)
+			{
+				temp = ran[j + 1];
+				ran[j + 1] = ran[j];
+				ran[j] = temp;
+			}
+			j++;
+		}
+		i++;
+	}
+	printf("end of sorting\n");
 
+}
+
+void		handle_stuff_library(char *ptr, t_nm_env *e)
+{
+	int					hdr_size;
+	unsigned int		i;
+	struct ranlib		*ran;
+	int					start;
+
+	i = 0;
+	hdr_size = 0;
 	start = 0;
 
 
-	//str = strndup(ptr, SARMAG);
-	// puts(str);
-	str = (void *)ptr + SARMAG + 60;
-	if (!ft_strcmp(str, SYMDEF_SORTED))
-		puts("SYMDEF !!!!!!!!!!");
-	ran = (void*)str + ft_strlen(SYMDEF_SORTED);
-	//ran = (struct ranlib*)ran + 1;
-	
-	ar = (void *)ptr + SARMAG;
-
-	ar = (struct ar_hdr*)ar + 10;
-	
-	while (i < 100000)
+	// str = (void *)ptr + SARMAG + AR_HDR_SIZE;
+	if (!ft_strcmp(ptr + SARMAG + AR_HDR_SIZE, SYMDEF) ||
+		!ft_strcmp(ptr + SARMAG + AR_HDR_SIZE, SYMDEF_SORTED))
 	{
-		if (ptr[i + start] == 0)
-			ft_putchar('0');
-		else if (isprint(ptr[i + start]))
-			ft_putchar(ptr[i + start]);
-		else
-			ft_putchar('.');
-		i++;
+		printf("PLOP\n");
 	}
-	i = 59;
-	/*while (--i > 0)
+	hdr_size = ft_atoi(ptr + SARMAG + ft_strlen(AR_EFMT1)) + AR_HDR_SIZE + SARMAG;
+	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
+	ran = (struct ranlib *)malloc(RAN_SIZE * hdr_size);
+	while (--i > 0)
 	{
-		printf("\nran : %s\n",ptr + ran[i].ran_off + sizeof(struct ar_hdr));
-	}*/
-	//printf("\nran : %s\n", ran[0].ran_un.stroff);
-	//printf("\nar->name : %s, time : %d\n", ar->ar_name, (int)ar->ar_gid);
-	//printf("PLOLOLOOOLLP\n");
-	// nsect = 0;
-	// header = (struct mach_header*)ptr;
-	// lc = (void *)ptr + sizeof(*	header);
-	// e->cpu = 32;
-	// for (i = 0 ; header->ncmds > i ; ++i)
-	// {		
-	// 	if (lc->cmd == LC_SEGMENT)
-	// 	{
-			
-	// 		// ft_printf("%s, %d\n", sg->segname, sg->nsects);
-	// 		find_sector_and_segment_32(lc, e);
-	// 	}
-	// 	lc = (void *)lc + lc->cmdsize;
-	// }
-	// handle_32(ptr, e);
-	(void)e;
+		ran[i] =  *(struct ranlib *)(ptr + hdr_size + 4 + i * (RAN_SIZE));
+		(void)e;
+	}
+	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
+	//sort_library(ptr, ran, i);
+	print_library(ptr, ran, i, e);
+	printf("suze : %lu\n", SARMAG + AR_HDR_SIZE);
 	printf("Library !\n");
 }
