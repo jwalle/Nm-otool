@@ -56,6 +56,7 @@ typedef	struct		s_nm_env
 	t_list			*lists;
 	t_list64		**all;
 	int				stocked;
+	char			*file;
 }					t_nm_env;
 
 struct		_cpu_type_names

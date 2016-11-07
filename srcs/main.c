@@ -97,6 +97,7 @@ int		main(int ac, char **av)
 			perror("open");
 			return(EXIT_FAILURE);
 		}
+		e->file = ft_strdup("a.out");
 	}
 	else if (ac == 2)
 	{
@@ -105,6 +106,7 @@ int		main(int ac, char **av)
 			perror("open");
 			return(EXIT_FAILURE);
 		}
+		e->file = ft_strdup(av[1]);
 	}
 	else
 	{

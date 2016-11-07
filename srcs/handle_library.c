@@ -19,7 +19,7 @@ void		print_library(void *ptr, struct ranlib *ran, unsigned int n, t_nm_env *e)
 {
 	while (--n > 0)
 	{
-		ft_printf("filename.a(%s):\n", ptr + ran[n].ran_off + AR_HDR_SIZE);
+		ft_printf("%s(%s):\n", e->file, ptr + ran[n].ran_off + AR_HDR_SIZE);
 		nm(ptr + ran[n].ran_off + 80, e);
 		ft_putchar('\n');
 
