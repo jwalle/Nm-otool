@@ -25,7 +25,7 @@ int			swap_int_end(int n)
 	return(ret);
 }
 
-void		handle_stuff_fat(char *ptr, t_nm_env *e)
+void		handle_stuff_taf(char *ptr, t_nm_env *e)
 {
 	int						i;
 	struct fat_header		*header;
@@ -38,21 +38,16 @@ void		handle_stuff_fat(char *ptr, t_nm_env *e)
 
 	for (i = 0 ; swap_int_end(header->nfat_arch) > i ; ++i)
 	{
-		printf("PLOP PLOP\n");
 		//if (fat->cputype == CPU_MAC)
-	
-
-
 		printf("CPU = %#x\n", swap_int_end(fat->cputype));
 
 		// if (fat->cmd == LC_SEGMENT_64)
 		{	
-
-			// ft_printf("%s, %d\n", sg->segname, sg->nsects);
+			//ft_printf("%s, %d\n", sg->segname, sg->nsects);
 		//	find_sector_and_segment_64(lc, e);
 		}
 		fat = (void*)fat + swap_int_end(fat->offset);	
 	}
 	// handle_fat(ptr, e);
-	printf("fat !\n");
+	printf("taf!\n");
 }

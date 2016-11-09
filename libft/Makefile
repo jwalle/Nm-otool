@@ -12,7 +12,11 @@
 
 NAME = libft.a
 
-FAT_FLAGS = -arch i386 -arch x86_64
+CC = clang $(FAT_FLAGS)
+
+FAT_FLAGS = -arch x86_64 -arch arm
+
+TAF_FLAGS = -arch i386 -arch x86_64
 
 SRC1 =	ft_putchar.c\
 		ft_bzero.c\
@@ -144,8 +148,8 @@ SRC2 =	ft_putchar.o\
 all : $(NAME) 
 
 $(NAME) :
-	@gcc $(FAT_FLAGS) -c -Wall -Wextra -Werror $(SRC1) -I ./
-	@ar rc $(NAME) $(SRC2)
+	@$(CC) -c -Wall -Wextra -Werror $(SRC1) -I ./
+	@ar rc $(NAME) $(SRC2) $(FAT_FLAGS)
 	@ranlib $(NAME)
 
 clean:

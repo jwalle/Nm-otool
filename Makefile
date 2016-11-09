@@ -13,7 +13,9 @@
 NAME = ft_nm
 CFLAGS = -Wall -Werror -Wextra -g
 
-FAT_FLAGS = -arch i386 -arch x86_64
+FAT_FLAGS = -arch x86_64 -arch arm
+
+TAF_FLAGS = -arch i386 -arch x86_64
 
 CC = clang $(FAT_FLAGS)
 SRCDIR = ./srcs/

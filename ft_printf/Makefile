@@ -12,10 +12,12 @@
 
 NAME = libftprintf.a
 
-FAT_FLAGS = -arch i386 -arch x86_64
+FAT_FLAGS = -arch x86_64 -arch arm
 
-CC = clang
-CFLAGS = -Wall -Werror -Wextra $(FAT_FLAGS)
+TAF_FLAGS = -arch i386 -arch x86_64
+
+CC = clang $(FAT_FLAGS)
+CFLAGS = -Wall -Werror -Wextra
 SRCDIR = ./srcs/
 
 SRCO = $(SRC:.c=.o)
