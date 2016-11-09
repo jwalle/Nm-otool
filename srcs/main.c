@@ -16,9 +16,10 @@
 **	/usr/include/mach-o/...
 */
 
-static	int	magic_number[] = { MH_MAGIC , MH_MAGIC_64, MH_RANLIB ,0};
+static	int	magic_number[] = { MH_MAGIC , MH_MAGIC_64, MH_RANLIB, FAT_CIGAM ,0};
 
-void	(*magic_functions[])(char*, t_nm_env*) = { handle_stuff_32 , handle_stuff_64 , handle_stuff_library};
+void	(*magic_functions[])(char*, t_nm_env*) =
+{ handle_stuff_32 , handle_stuff_64 , handle_stuff_library, handle_stuff_fat};
 
 void	nm(char *ptr, t_nm_env *e)
 {
@@ -36,7 +37,6 @@ void	nm(char *ptr, t_nm_env *e)
 		}
 		i++;
 	}
-
 	/*if (magic_num == MH_MAGIC_64)
 	{
 		puts("c'est du 64 !!");

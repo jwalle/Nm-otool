@@ -58,7 +58,7 @@ typedef	struct		s_nm_env
 	int				stocked;
 	char			*file;
 }					t_nm_env;
-
+/*
 struct		_cpu_type_names
 {
 	cpu_type_t		cputype;
@@ -69,13 +69,14 @@ static struct _cpu_type_names cpu_type_names[] =
 {
 	{CPU_TYPE_I386, "i386"},
 	{CPU_TYPE_X86_64, "x86_64"}
-};
+};*/
 
 
 // void				handle_64(char *ptr, t_nm_env *e);
 void				handle_stuff_library(char *ptr, t_nm_env *e);
 void				handle_stuff_64(char *ptr, t_nm_env *e);
 void				handle_stuff_32(char *ptr, t_nm_env *e);
+void				handle_stuff_fat(char *ptr, t_nm_env *e);
 t_list64			*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e);
 void				sort_output(t_nm_env *e);
 void				stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e);

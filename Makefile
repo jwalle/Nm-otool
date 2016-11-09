@@ -12,7 +12,10 @@
 
 NAME = ft_nm
 CFLAGS = -Wall -Werror -Wextra -g
-CC = clang
+
+FAT_FLAGS = -arch i386 -arch x86_64
+
+CC = clang $(FAT_FLAGS)
 SRCDIR = ./srcs/
 ODIR = ./objs/
 INC = -I./includes -I./libft -I./ft_printf/includes/
@@ -27,7 +30,9 @@ SRC = main.c \
 	  handle_library.c \
 	  handle_64.c \
 	  handle_32.c \
+	  handle_fat.c \
 	  common_functions.c \
+
 
 OBJ		=	$(SRC:.c=.o)
 OBJS	= 	$(addprefix $(ODIR), $(OBJ))
