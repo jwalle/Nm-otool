@@ -121,7 +121,8 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 	nsect = 0;
 	header = (struct mach_header*)ptr;
 	lc = (void *)ptr + sizeof(*	header);
-	e->cpu = 32;
+	if (!e->cpu)
+		e->cpu = 32;
 	for (i = 0 ; header->ncmds > i ; ++i)
 	{		
 		if (lc->cmd == LC_SEGMENT)

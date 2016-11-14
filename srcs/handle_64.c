@@ -42,7 +42,7 @@ static void	stock_output_64(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	e->all = all;
 	while (i < nsyms)
 	{
-		if (array[i].n_un.n_strx > 1 && array[i].n_sect > 0)
+		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0) // added '=' for library
 		{
 			all[j] = stock_symbols_64(array, string_table, i, e);
 			j++;
@@ -121,7 +121,8 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 	nsect = 0;
 	header = (struct mach_header_64*)ptr;
 	lc = (void *)ptr + sizeof(*	header);
-	e->cpu = 64;
+	if (!e->cpu)
+		e->cpu = 64;
 	for (i = 0 ; header->ncmds > i ; ++i)
 	{
 		if (lc->cmd == LC_SEGMENT_64)
@@ -132,5 +133,5 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 		lc = (void *)lc + lc->cmdsize;
 	}
 	handle_64(ptr, e);
-	printf("64 !\n");
+	// printf("64 !\n");
 }

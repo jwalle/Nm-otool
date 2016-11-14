@@ -28,7 +28,7 @@ void	nm(char *ptr, t_nm_env *e)
 
 	i = 0;
 	magic_num = *(int *)ptr;
-	printf("magic_number = %#x\n", magic_num);
+	// printf("magic_number = %#x\n", magic_num);
 	while (magic_number[i])
 	{
 		if (magic_num == magic_number[i])
@@ -89,6 +89,7 @@ int		main(int ac, char **av)
 
 	fd = 0;
 	e = (t_nm_env *)malloc(sizeof(t_nm_env));
+	e->cpu = 0;
 		// return (EXIT_FAILURE);
 	if (ac == 1)
 	{

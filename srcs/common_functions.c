@@ -89,7 +89,7 @@ void	print_output(t_nm_env *e)
 		{
 			if (e->cpu == 32)
 				printf("%8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-			else if (e->cpu == 64)
+			else if (e->cpu == 64 || e->cpu == 16)
 				printf("        %8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
 		}
 		//else if (e->all[i]->type == '?' && e->all[i]->value != 0)
@@ -100,11 +100,13 @@ void	print_output(t_nm_env *e)
 		{
 			if (e->cpu == 64)
 				printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 16)
+				printf("00000000%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
 			else if (e->cpu == 32)
 			printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		}
-		//else
-		//	printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		// else
+			// printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;
 	}
 }

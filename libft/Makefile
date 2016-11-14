@@ -14,7 +14,7 @@ NAME = libft.a
 
 CC = clang $(FAT_FLAGS)
 
-FAT_FLAGS = -arch x86_64 -arch arm
+AT_FLAGS = -arch x86_64 -arch arm
 
 TAF_FLAGS = -arch i386 -arch x86_64
 
