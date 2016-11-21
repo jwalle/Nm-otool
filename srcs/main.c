@@ -82,32 +82,57 @@ int		process_file(int fd, t_nm_env *e)
 	return (EXIT_SUCCESS);
 }
 
-int		main(int ac, char **av)
+int		test_open(int n, char **av)
 {
-	int 			fd;
-	t_nm_env		*e;
+	int	fd;
 
-	fd = 0;
-	e = (t_nm_env *)malloc(sizeof(t_nm_env));
-	e->cpu = 0;
-		// return (EXIT_FAILURE);
-	if (ac == 1)
+	if (!n)
 	{
 		if ((fd = open("a.out", O_RDONLY)) < 0)
 		{
 			perror("open");
 			return(EXIT_FAILURE);
 		}
+	}
+	else if ((fd = open(av[n], O_RDONLY)) < 0)
+	{
+			perror("open");
+			return(EXIT_FAILURE);
+	}
+	return (fd);
+}
+
+int		main(int ac, char **av)
+{
+	int 			fd;
+	t_nm_env		*e;
+	int				i;
+
+	fd = 0;
+	i = 1;
+	e = (t_nm_env *)malloc(sizeof(t_nm_env));
+	e->cpu = 0;
+		// return (EXIT_FAILURE);
+	if (ac == 1)
+	{
+		fd = test_open(0, av);
 		e->file = ft_strdup("a.out");
 	}
 	else if (ac == 2)
 	{
-		if ((fd = open(av[1], O_RDONLY)) < 0)
-		{
-			perror("open");
-			return(EXIT_FAILURE);
-		}
+		fd = test_open(1, av);
 		e->file = ft_strdup(av[1]);
+	}
+	else if (ac > 2)
+	{
+		while (i < ac)
+		{
+			printf("\n%s\n", av[i]); // REAL PRINTF
+			fd = test_open(i, av);
+			process_file(fd, e);
+			// init env;
+			i++;
+		}
 	}
 	else
 	{
