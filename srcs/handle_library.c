@@ -22,7 +22,6 @@ void		print_library(void *ptr, struct ranlib *ran, unsigned int n, t_nm_env *e)
 		ft_printf("%s(%s):\n", e->file, ptr + ran[n].ran_off + AR_HDR_SIZE);
 		nm(ptr + ran[n].ran_off + 80, e);
 		ft_putchar('\n');
-
 	}
 }
 
@@ -73,13 +72,13 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 	hdr_size = ft_atoi(ptr + SARMAG + ft_strlen(AR_EFMT1)) + AR_HDR_SIZE + SARMAG;
 	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
 	ran = (struct ranlib *)malloc(RAN_SIZE * hdr_size);
-	while (--i > 0)
+	while (i-- > 0)
 	{
 		ran[i] =  *(struct ranlib *)(ptr + hdr_size + 4 + i * (RAN_SIZE));
-		// printf("ran = %s\n", ptr + ran[i].ran_off);
+		 // printf("ran = %s\n", ptr + ran[i].ran_off);
 	}
 	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
 	sort_library(ran, i);
 	print_library(ptr, ran, i, e);
-	// printf("Library !\n");
+	printf("Library !\n");
 }
