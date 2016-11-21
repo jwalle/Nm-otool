@@ -134,5 +134,5 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 		lc = (void *)lc + lc->cmdsize;
 	}
 	handle_32(ptr, e);
-	printf("32 !\n");
+	//printf("32 !\n");
 }

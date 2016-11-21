@@ -23,6 +23,9 @@ t_list64	*stock_symbols_64(struct nlist_64 *array, char *st, int i, t_nm_env *e)
 	new->n_sect = array[i].n_sect;
 	new->n_type = array[i].n_type;
 	new->type = get_type(new, e);
+
+	//printf("name : %s, type : %c, mask : %d\n", new->name, new->type, new->n_type & N_TYPE);
+
 	return (new);	
 }
 
@@ -42,10 +45,13 @@ static void	stock_output_64(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	e->all = all;
 	while (i < nsyms)
 	{
-		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0) // added '=' for library
+		if (array[i].n_un.n_strx > 1 && array[i].n_sect >= 0) // added '=' for library ; deleted for /bin/htop
 		{
-			all[j] = stock_symbols_64(array, string_table, i, e);
-			j++;
+			if ((string_table + array[i].n_un.n_strx) && !strstr(string_table + array[i].n_un.n_strx,"radr"))
+			{
+				all[j] = stock_symbols_64(array, string_table, i, e);
+				j++;
+			}
 			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
 													  , array[i].n_type & N_PEXT
@@ -85,30 +91,31 @@ static void	handle_64(char *ptr, t_nm_env *e)
 	}
 }
 
-static void	find_sector_and_segment_64(struct load_command *lc, t_nm_env *e)
+static int	find_sector_and_segment_64(struct load_command *lc, t_nm_env *e, int nsect)
 {
 	struct segment_command_64	*sg;
 	struct section_64			*s;
-	int							nsect;
+	//int							nsect;
 	uint32_t					j;
 
-	nsect = 0;
+//	nsect = 1;
 	sg = (struct segment_command_64 *)lc;
 	s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
 	for (j = 0; j < sg->nsects ; j++)
 	{
 		if (!ft_strcmp((s + j)->sectname, SECT_TEXT) &&
 			!ft_strcmp((s + j)->segname, SEG_TEXT))
-			e->text = nsect + 1;
+			e->text = nsect;
 		else if (!ft_strcmp((s + j)->sectname, SECT_DATA) &&
 				!ft_strcmp((s + j)->segname, SEG_DATA))
-			e->data = nsect + 1;
+			e->data = nsect;
 		else if (!ft_strcmp((s + j)->sectname, SECT_BSS) &&
 				!ft_strcmp((s + j)->segname, SEG_DATA))
-			e->bss = nsect + 1;
-		//printf("(s + j)->sectname : %s\n", (s + j)->sectname);
+			e->bss = nsect;
+		//printf("(s + j)->sectname : %s --> nsect = %d\n", (s + j)->sectname, nsect);
 		nsect++;
 	}
+	return (nsect);
 }
 
 void		handle_stuff_64(char *ptr, t_nm_env *e)
@@ -118,7 +125,7 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 	struct mach_header_64	*header;
 	struct load_command		*lc;
 	
-	nsect = 0;
+	nsect = 1;
 	header = (struct mach_header_64*)ptr;
 	lc = (void *)ptr + sizeof(*	header);
 	if (!e->cpu)
@@ -127,11 +134,13 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 	{
 		if (lc->cmd == LC_SEGMENT_64)
 		{
-			// ft_printf("%s, %d\n", sg->segname, sg->nsects);
-			find_sector_and_segment_64(lc, e);
+			 // ft_printf("%s, %d\n", sg->segname, sg->nsects);
+			//printf("PLOP\n");
+			nsect = find_sector_and_segment_64(lc, e, nsect);
 		}
 		lc = (void *)lc + lc->cmdsize;
 	}
 	handle_64(ptr, e);
+	// printf("data = %d\n", e->data);
 	// printf("64 !\n");
 }

@@ -38,7 +38,7 @@ char		get_type(t_list64 *new, t_nm_env *e)
 	{
 		if (n == e->text)
 			ret = 't';
-		else if (n == e->data)
+		else if (n == e->data) // appair as s
 			ret = 'd';
 		else if (n == e->bss)
 			ret = 'b';
@@ -85,7 +85,7 @@ void	print_output(t_nm_env *e)
 	{
 		if (e->all[i]->type == 'U' && e->all[i]->type == 'u' && e->cpu == 64)
 			ft_printf("");
-		if (e->all[i]->type == 'U' || e->all[i]->type == 'u')
+		if (e->all[i]->type == 'U' /*|| e->all[i]->type == 'u'*/)
 		{
 			if (e->cpu == 32)
 				printf("%8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);

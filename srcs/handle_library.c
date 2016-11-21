@@ -80,5 +80,5 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
 	sort_library(ran, i);
 	print_library(ptr, ran, i, e);
-	printf("Library !\n");
+	//printf("Library !\n");
 }
