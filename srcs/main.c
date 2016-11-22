@@ -30,7 +30,7 @@ void	nm(char *ptr, t_nm_env *e)
 	i = 0;
 	flag = 0;
 	magic_num = *(int *)ptr;
-	//printf("magic_number = %#x\n", magic_num);
+	printf("magic_number = %#x\n", magic_num);
 	while (magic_number[i])
 	{
 		if (magic_num == magic_number[i])
@@ -40,8 +40,8 @@ void	nm(char *ptr, t_nm_env *e)
 		}
 		i++;
 	}
-	if (!flag)
-		ft_printf("ft_nm : %s : The file was not recognized as a valid object file.\n", e->file);
+	// if (!flag)
+		// ft_printf("ft_nm : %s : The file was not recognized as a valid object file.\n", e->file);
 }
 
 int		process_file(int fd, t_nm_env *e)
