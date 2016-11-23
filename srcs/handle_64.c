@@ -45,7 +45,7 @@ static void	stock_output_64(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	e->all = all;
 	while (i < nsyms)
 	{
-		if (array[i].n_un.n_strx > 1 && array[i].n_sect >= 0) // added '=' for library ; deleted for /bin/htop
+		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0) // added '=' for library ; deleted for /bin/htop
 		{
 			if ((string_table + array[i].n_un.n_strx) && !strstr(string_table + array[i].n_un.n_strx,"radr"))
 			{
@@ -98,7 +98,7 @@ static int	find_sector_and_segment_64(struct load_command *lc, t_nm_env *e, int 
 	//int							nsect;
 	uint32_t					j;
 
-//	nsect = 1;
+	//	nsect = 1;
 	sg = (struct segment_command_64 *)lc;
 	s = (struct section_64 *)((char *)sg + sizeof(struct segment_command_64));
 	for (j = 0; j < sg->nsects ; j++)

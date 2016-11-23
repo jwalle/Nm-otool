@@ -35,20 +35,19 @@ void		sort_library(struct ranlib *ran, unsigned int n)
 	while (i < n)
 	{
 		j = 0;
-		while(j < n - 1)
+		while (j < n - 1)
 		{
 			while (ran[j].ran_off < ran[j + 1].ran_off)
 			{
 				temp = ran[j + 1];
 				ran[j + 1] = ran[j];
 				ran[j] = temp;
-			}
+			}	
 			j++;
 		}
 		i++;
 	}
 	//printf("end of sorting\n");
-
 }
 
 void		handle_stuff_library(char *ptr, t_nm_env *e)
@@ -61,6 +60,16 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 	i = 0;
 	hdr_size = 0;
 	start = 0;
+	/*int n = 0;
+	while (n++ < 70000)
+	{
+		if (isprint(ptr[n]))
+			printf("%c", ptr[n]);
+		else
+			printf(".");
+		if (n % 100 == 0)
+			printf("\nline : %d", n);
+	}*/
 	if (!e->cpu)
 		e->cpu = 16;
 	// str = (void *)ptr + SARMAG + AR_HDR_SIZE;
@@ -74,11 +83,13 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 	ran = (struct ranlib *)malloc(RAN_SIZE * hdr_size);
 	while (i-- > 0)
 	{
-		ran[i] =  *(struct ranlib *)(ptr + hdr_size + 4 + i * (RAN_SIZE));
-		 // printf("ran = %s\n", ptr + ran[i].ran_off);
+		printf("size = %d\n",
+			ft_atoi(ptr + ft_atoi(ptr + SARMAG + ft_strlen(AR_EFMT1)) + AR_HDR_SIZE + SARMAG + 4 + i * (RAN_SIZE)));
+		ran[i] = *(struct ranlib *)(ptr + hdr_size + 4 + i * (RAN_SIZE));
+		//printf("ran = %s\n", ptr + ran[i].ran_off);
 	}
 	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
-	sort_library(ran, i);
-	print_library(ptr, ran, i, e);
+	//sort_library(ran, i);
+	//print_library(ptr, ran, i, e);
 	//printf("Library !\n");
 }

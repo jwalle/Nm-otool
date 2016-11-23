@@ -12,7 +12,7 @@
 
 #include "ft_nm.h"
 
-char		get_type(t_list64 *new, t_nm_env *e)
+char	get_type(t_list64 *new, t_nm_env *e)
 {
 	char	c;
 	char	mask;
@@ -23,7 +23,6 @@ char		get_type(t_list64 *new, t_nm_env *e)
 	c = new->n_type;
 	mask = c & N_TYPE;
 	ret = '?';
-
 	if (mask == N_UNDF)
 	{
 		ret = 'u';
@@ -38,7 +37,7 @@ char		get_type(t_list64 *new, t_nm_env *e)
 	{
 		if (n == e->text)
 			ret = 't';
-		else if (n == e->data) // appair as s
+		else if (n == e->data)
 			ret = 'd';
 		else if (n == e->bss)
 			ret = 'b';
@@ -49,6 +48,42 @@ char		get_type(t_list64 *new, t_nm_env *e)
 		ret = ft_toupper(ret);
 	return (ret);
 }
+
+void	print_output(t_nm_env *e)
+{
+	int				i;
+
+	i = 0;
+	while(i < e->stocked)
+	{
+		if (e->all[i]->type == 'U' && e->all[i]->type == 'u' && e->cpu == 64)
+			ft_printf("");
+		if (e->all[i]->type == 'U' /*|| e->all[i]->type == 'u'*/)
+		{
+			if (e->cpu == 32)
+				ft_printf("%8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 64 || e->cpu == 16)
+				ft_printf("        %8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
+		}
+		//else if (e->all[i]->type == '?' && e->all[i]->value != 0)
+		//	printf("%016x %c %s\n", e->all[i]->n_sect, e->all[i]->type, e->all[i]->name);
+		else if (e->all[i]->type == 'T' || e->all[i]->type == 't' || e->all[i]->type == 's'
+			|| e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D'
+			|| e->all[i]->type == 'b' || e->all[i]->type == 'b')
+		{
+			if (e->cpu == 64)
+				ft_printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 16)
+				ft_printf("00000000%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 32)
+			ft_printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		}
+		// else
+			// printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		i++;
+	}
+}
+
 
 void	sort_output(t_nm_env *e)
 {
@@ -76,37 +111,3 @@ void	sort_output(t_nm_env *e)
 	}
 }
 
-void	print_output(t_nm_env *e)
-{
-	int				i;
-
-	i = 0;
-	while(i < e->stocked)
-	{
-		if (e->all[i]->type == 'U' && e->all[i]->type == 'u' && e->cpu == 64)
-			ft_printf("");
-		if (e->all[i]->type == 'U' /*|| e->all[i]->type == 'u'*/)
-		{
-			if (e->cpu == 32)
-				printf("%8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-			else if (e->cpu == 64 || e->cpu == 16)
-				printf("        %8.x %c %s\n", 0, e->all[i]->type, e->all[i]->name);
-		}
-		//else if (e->all[i]->type == '?' && e->all[i]->value != 0)
-		//	printf("%016x %c %s\n", e->all[i]->n_sect, e->all[i]->type, e->all[i]->name);
-		else if (e->all[i]->type == 'T' || e->all[i]->type == 't' || e->all[i]->type == 's'
-			|| e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D'
-			|| e->all[i]->type == 'b' || e->all[i]->type == 'b')
-		{
-			if (e->cpu == 64)
-				printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-			else if (e->cpu == 16)
-				printf("00000000%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-			else if (e->cpu == 32)
-			printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		}
-		// else
-			// printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		i++;
-	}
-}
