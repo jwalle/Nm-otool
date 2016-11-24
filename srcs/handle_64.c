@@ -47,12 +47,12 @@ static void	stock_output_64(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	{
 		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0) // added '=' for library ; deleted for /bin/htop
 		{
-			if ((string_table + array[i].n_un.n_strx) && !strstr(string_table + array[i].n_un.n_strx,"radr"))
+			if (ft_strlen(string_table + array[i].n_un.n_strx) && !strstr(string_table + array[i].n_un.n_strx,"radr"))
 			{
 				all[j] = stock_symbols_64(array, string_table, i, e);
 				j++;
 			}
-			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
+		/*	printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
 													  , array[i].n_type & N_PEXT
 													  , array[i].n_type & N_TYPE

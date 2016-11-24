@@ -49,13 +49,13 @@ char	get_type(t_list64 *new, t_nm_env *e)
 	return (ret);
 }
 
-void	print_output(t_nm_env *e)
+void	print_output(t_nm_env *e) // CACA
 {
 	int				i;
 
 	i = 0;
 	while(i < e->stocked)
-	{
+	{		
 		if (e->all[i]->type == 'U' && e->all[i]->type == 'u' && e->cpu == 64)
 			ft_printf("");
 		if (e->all[i]->type == 'U' /*|| e->all[i]->type == 'u'*/)
@@ -71,13 +71,13 @@ void	print_output(t_nm_env *e)
 			|| e->all[i]->type == 'S' || e->all[i]->type == 'd' || e->all[i]->type == 'D'
 			|| e->all[i]->type == 'b' || e->all[i]->type == 'b')
 		{
-			if (e->cpu == 64)
-				ft_printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-			else if (e->cpu == 16)
+			if (e->lib)
 				ft_printf("00000000%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+			else if (e->cpu == 64)
+				ft_printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
 			else if (e->cpu == 32)
-			ft_printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
-		}
+				ft_printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+		}		
 		// else
 			// printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;

@@ -76,6 +76,7 @@ t_nm_env	*init_env(char *file)
 
 	e = (t_nm_env *)malloc(sizeof(t_nm_env));
 	e->cpu = 0;
+	e->lib = 0;
 	e->text = 0;
 	e->data = 0;
 	e->bss = 0;

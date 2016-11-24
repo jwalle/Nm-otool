@@ -42,10 +42,13 @@ static void	stock_output_32(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 	e->all = all;
 	while (i < nsyms)
 	{
-		if (array[i].n_un.n_strx > 1)
+		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0) // added '=' for library ; deleted for /bin/htop
 		{
-			all[j] = stock_symbols_32(array, string_table, i, e);
-			j++;
+			if (ft_strlen(string_table + array[i].n_un.n_strx) && !strstr(string_table + array[i].n_un.n_strx,"radr"))
+			{
+				all[j] = stock_symbols_32(array, string_table, i, e);
+				j++;
+			}
 			/*printf("plop = %s, %i, %i, %i, %i, (%d), [%d]\n", string_table + array[i].n_un.n_strx
 													  , array[i].n_type & N_STAB
 													  , array[i].n_type & N_PEXT
@@ -53,7 +56,6 @@ static void	stock_output_32(int nsyms, int symoff, int stroff, char *ptr, t_nm_e
 													  , array[i].n_type & N_EXT
 													  , array[i].n_un.n_strx
 													  , array[i].n_sect);*/
-		
 		}
 		i++;
 	}
@@ -78,37 +80,36 @@ static void	handle_32(char *ptr, t_nm_env *e)
 			sym = (struct symtab_command *)lc;
 			stock_output_32(sym->nsyms, sym->symoff, sym->stroff, ptr, e);
 			sort_output(e);
-			print_output(e);
+			print_output(e);			
 			break ;
 		}
 		lc = (void *)lc + lc->cmdsize;
 	}
 }
 
-static void	find_sector_and_segment_32(struct load_command *lc, t_nm_env *e)
+static int	find_sector_and_segment_32(struct load_command *lc, t_nm_env *e, int nsect)
 {
 	struct segment_command	*sg;
 	struct section			*s;
-	int						nsect;
 	uint32_t				j;
 
-	nsect = 0;
 	sg = (struct segment_command *)lc;
 	s = (struct section *)((char *)sg + sizeof(struct segment_command));
 	for (j = 0; j < sg->nsects ; j++)
 	{
 		if (!ft_strcmp((s + j)->sectname, SECT_TEXT) &&
 			!ft_strcmp((s + j)->segname, SEG_TEXT))
-			e->text = nsect + 1;
+			e->text = nsect;
 		else if (!ft_strcmp((s + j)->sectname, SECT_DATA) &&
 				!ft_strcmp((s + j)->segname, SEG_DATA))
-			e->data = nsect + 1;
+			e->data = nsect;
 		else if (!ft_strcmp((s + j)->sectname, SECT_BSS) &&
 				!ft_strcmp((s + j)->segname, SEG_DATA))
-			e->bss = nsect + 1;
+			e->bss = nsect;
 		//printf("(s + j)->sectname : %s\n", (s + j)->sectname);
 		nsect++;
 	}
+	return (nsect);
 }
 
 void		handle_stuff_32(char *ptr, t_nm_env *e)
@@ -118,18 +119,19 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 	struct mach_header	*header;
 	struct load_command	*lc;
 	
-	nsect = 0;
+	nsect = 1;
 	header = (struct mach_header*)ptr;
 	lc = (void *)ptr + sizeof(*	header);
 	if (!e->cpu)
 		e->cpu = 32;
+	e->lib = 0;
 	for (i = 0 ; header->ncmds > i ; ++i)
 	{		
 		if (lc->cmd == LC_SEGMENT)
 		{
 			
 			// ft_printf("%s, %d\n", sg->segname, sg->nsects);
-			find_sector_and_segment_32(lc, e);
+			nsect = find_sector_and_segment_32(lc, e, nsect);
 		}
 		lc = (void *)lc + lc->cmdsize;
 	}

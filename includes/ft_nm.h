@@ -46,11 +46,11 @@ typedef	struct		s_list64
 	char			n_type;
 }					t_list64;
 
-
 typedef	struct		s_nm_env
 {
 	int				text;
 	int				cpu;
+	int				lib;
 	int				data;
 	int				bss;
 	t_list			*lists;
