@@ -85,11 +85,12 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 	}
 	hdr_size = ft_atoi(ptr + SARMAG + ft_strlen(AR_EFMT1)) + AR_HDR_SIZE + SARMAG;
 	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);
+
+	printf("i = %d\n", i);
 	ran = (struct ranlib *)malloc(RAN_SIZE * i);
 	while (i-- > 0)
 	{
 		ran[i] = *(struct ranlib *)(ptr + hdr_size + 4 + i * (RAN_SIZE));
-		// ft_printf("ran = %u, name = %s\n", ran[i].ran_off , ptr + ran[i].ran_off + AR_HDR_SIZE);
 	}
 	// printf("sizeof = %lu\n", RAN_SIZE);
 	i = *(int *)(ptr + hdr_size) / sizeof(struct ranlib);

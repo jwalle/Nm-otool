@@ -44,6 +44,8 @@ char	get_type(t_list64 *new, t_nm_env *e)
 		ret = 'u';
 	else if (mask == N_ABS)
 		ret = 'a';
+	else if (mask == N_INDR)
+		ret = 'i';
 	else if (mask == N_SECT)
 		ret = get_nsect(n, e);
 	if ((c & N_EXT) && ret != '?')
@@ -52,7 +54,7 @@ char	get_type(t_list64 *new, t_nm_env *e)
 	return (ret);
 }
 
-#define SYMBOLS "TtSsDdBb"
+#define SYMBOLS "TtSsDdBbiI"
 
 void	print_output(t_nm_env *e) // CACA
 {

@@ -130,8 +130,10 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 	lc = (void *)ptr + sizeof(*	header);
 	if (!e->cpu)
 		e->cpu = 64;
-	if (header->filetype == MH_DYLIB || header->filetype == MH_OBJECT)
+	if (header->filetype == MH_DYLIB || header->filetype == MH_OBJECT || header->filetype == MH_BUNDLE)
 		e->lib = 1;
+	// else
+		// printf("%#x\n", header->filetype);
 	if (header->filetype == MH_DYLINKER)
 		e->dylink = 1;
 	for (i = 0 ; header->ncmds > i ; ++i)
