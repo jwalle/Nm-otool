@@ -10,7 +10,9 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = ft_nm
+FT_NM = ft_nm
+FT_OTOOL = ft_otool
+
 CFLAGS = -Wall -Werror -Wextra -g
 
 AT_FLAGS = -arch x86_64 -arch arm
@@ -18,8 +20,10 @@ AT_FLAGS = -arch x86_64 -arch arm
 TAF_FLAGS = -arch i386 -arch x86_64
 
 CC = clang $(FAT_FLAGS)
-SRCDIR = ./srcs/
-ODIR = ./objs/
+SRCDIR_NM = ./srcs_nm/
+SRCDIR_OTOOL = ./srcs_otool/
+ODIR_NM = ./objs_nm/
+ODIR_OTOOL = ./objs_otool/
 INC = -I./includes -I./libft -I./ft_printf/includes/
 LINK = -L./libft -lft -L./ft_printf -lftprintf
 BLU = tput setaf 4
@@ -27,7 +31,7 @@ GRN = tput setaf 2
 WHT = tput setaf 7
 RESET = tput sgr 0
 
-SRC = main.c \
+SRC_NM = main.c \
 	  sort.c \
 	  handle_library.c \
 	  handle_64.c \
@@ -35,32 +39,54 @@ SRC = main.c \
 	  handle_fat.c \
 	  common_functions.c \
 
+SRC_OTOOL = main.c \
 
-OBJ		=	$(SRC:.c=.o)
-OBJS	= 	$(addprefix $(ODIR), $(OBJ))
+OBJ_NM	=	$(SRC_NM:.c=.o)
+OBJ_OTOOL	=	$(SRC_OTOOL:.c=.o)
+OBJS_NM	= 	$(addprefix $(ODIR_NM), $(OBJ_NM))
+OBJS_OTOOL	= 	$(addprefix $(ODIR_OTOOL), $(OBJ_OTOOL))
 
-all :	$(LIB) $(NAME)
+all :	$(LIB) $(FT_NM) $(FT_OTOOL)
 
-$(NAME) : $(OBJS)
+$(FT_NM) : $(OBJS_NM)
 	@$(BLU)
-	mkdir -p $(ODIR)
+	mkdir -p $(ODIR_NM)
 	make -C libft
 	make -C ft_printf
 	@echo "Making $(NAME)..."
-	@$(CC)  -o $(NAME) $^ $(LINK)
+	@$(CC)  -o $(FT_NM) $^ $(LINK)
 	@$(GRN)
 	@echo "Done !"
 	@$(RESET)
 
-$(ODIR)%.o : $(SRCDIR)%.c
+$(ODIR_NM)%.o : $(SRCDIR_NM)%.c
 	@$(BLU)
 	@echo "making objects..."
-	mkdir -p $(ODIR)
+	mkdir -p $(ODIR_NM)
 	@$(CC) $(CFLAGS) -c $^ $(INC) -o $@
 	@$(GRN)
 	@echo "Done !"
 	@$(RESET)
 
+$(FT_OTOOL) : $(OBJS_OTOOL)
+	@$(BLU)
+	mkdir -p $(ODIR_OTOOL)
+	make -C libft
+	make -C ft_printf
+	@echo "Making $(NAME)..."
+	@$(CC)  -o $(FT_OTOOL) $^ $(LINK)
+	@$(GRN)
+	@echo "Done !"
+	@$(RESET)
+
+$(ODIR_OTOOL)%.o : $(SRCDIR_OTOOL)%.c
+	@$(BLU)
+	@echo "making objects..."
+	mkdir -p $(ODIR_OTOOL)
+	@$(CC) $(CFLAGS) -c $^ $(INC) -o $@
+	@$(GRN)
+	@echo "Done !"
+	@$(RESET)
 
 $(LIB):
 	@$(BLU)
@@ -80,7 +106,8 @@ clean:
 	@make -C ft_printf fclean
 	@$(BLU)
 	@echo "Cleaning objects..."
-	@rm -rf $(ODIR)
+	@rm -rf $(ODIR_NM)
+	@rm -rf $(ODIR_OTOOL)
 	@$(GRN)
 	@echo "Done !"
 	@$(RESET)
@@ -88,7 +115,8 @@ clean:
 fclean: clean
 	@$(BLU)
 	@echo "Deleting executable..."
-	@rm -rf $(NAME)
+	@rm -rf $(FT_NM)
+	@rm -rf $(FT_OTOOL)
 	@$(GRN)
 	@echo "Done !"
 	@$(RESET)
