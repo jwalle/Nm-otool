@@ -31,12 +31,14 @@ void		handle_stuff_taf(char *ptr, t_nm_env *e)
 	struct fat_header		*header;
 	struct fat_arch			*fat;
 
+	e->fat = 1;
 	header = (struct fat_header*)ptr;
 	i = 0;
 	fat = (struct fat_arch*)(ptr + sizeof(struct fat_header));
 	while (swap_int_end(header->nfat_arch) > i++)
 	{
-		if (swap_int_end(fat->cputype) == CPU_TYPE_X86_64)
+		if (swap_int_end(fat->cputype) == CPU_TYPE_X86_64/* ||
+			swap_int_end(fat->cputype) == CPU_TYPE_I386*/)
 		{
 			nm(ptr + swap_int_end(fat->offset),e);
 			return ;
@@ -51,12 +53,13 @@ void		handle_stuff_fat(char *ptr, t_nm_env *e)
 	struct fat_header		*header;
 	struct fat_arch			*fat;
 
+	e->fat = 1;
 	header = (struct fat_header*)ptr;
 	i = 0;
 	fat = (struct fat_arch*)(ptr + sizeof(struct fat_header));
 	while ((int)header->nfat_arch > i++)
 	{
-		if (fat->cputype == CPU_TYPE_X86_64)
+		if (fat->cputype == CPU_TYPE_X86_64 || fat->cputype == CPU_TYPE_I386)
 		{
 			nm(ptr + fat->offset,e);
 			return ;

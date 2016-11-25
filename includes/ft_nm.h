@@ -48,6 +48,8 @@ typedef	struct		s_list64
 
 typedef	struct		s_nm_env
 {
+	int				fat;
+	int				dylink;
 	int				text;
 	int				cpu;
 	int				lib;

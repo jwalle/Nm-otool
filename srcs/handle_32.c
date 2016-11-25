@@ -129,8 +129,7 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 	{		
 		if (lc->cmd == LC_SEGMENT)
 		{
-			
-			// ft_printf("%s, %d\n", sg->segname, sg->nsects);
+		//	ft_printf("%s, %d\n", sg->segname, sg->nsects);
 			nsect = find_sector_and_segment_32(lc, e, nsect);
 		}
 		lc = (void *)lc + lc->cmdsize;

@@ -30,7 +30,7 @@ void	nm(char *ptr, t_nm_env *e)
 	i = 0;
 	flag = 0;
 	magic_num = *(int *)ptr;
-	// printf("magic_number = %#x\n", magic_num);
+	//printf("magic_number = %#x\n", magic_num);
 	while (magic_number[i])
 	{
 		if (magic_num == magic_number[i])
@@ -48,7 +48,6 @@ int		process_file(int fd, t_nm_env *e)
 {
 	struct stat		buf;
 	char			*ptr;
-
 
 	if ((fstat(fd, &buf)) < 0)
 	{
@@ -76,8 +75,10 @@ t_nm_env	*init_env(char *file)
 
 	e = (t_nm_env *)malloc(sizeof(t_nm_env));
 	e->cpu = 0;
+	e->fat = 0;
 	e->lib = 0;
 	e->text = 0;
+	e->dylink = 0;
 	e->data = 0;
 	e->bss = 0;
 	e->stocked = 0;

@@ -112,7 +112,7 @@ static int	find_sector_and_segment_64(struct load_command *lc, t_nm_env *e, int 
 		else if (!ft_strcmp((s + j)->sectname, SECT_BSS) &&
 				!ft_strcmp((s + j)->segname, SEG_DATA))
 			e->bss = nsect;
-		//printf("(s + j)->sectname : %s --> nsect = %d\n", (s + j)->sectname, nsect);
+		// printf("(s + j)->sectname : %s --> nsect = %d\n", (s + j)->sectname, nsect);
 		nsect++;
 	}
 	return (nsect);
@@ -130,6 +130,10 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 	lc = (void *)ptr + sizeof(*	header);
 	if (!e->cpu)
 		e->cpu = 64;
+	if (header->filetype == MH_DYLIB || header->filetype == MH_OBJECT)
+		e->lib = 1;
+	if (header->filetype == MH_DYLINKER)
+		e->dylink = 1;
 	for (i = 0 ; header->ncmds > i ; ++i)
 	{
 		if (lc->cmd == LC_SEGMENT_64)
