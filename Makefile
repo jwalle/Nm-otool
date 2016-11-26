@@ -40,6 +40,8 @@ SRC_NM = main.c \
 
 SRC_OTOOL = main.c \
 		handle_otool_32_64.c \
+		handle_otool_fat.c \
+		handle_otool_lib.c \
 	  	common_otool.c \
 
 

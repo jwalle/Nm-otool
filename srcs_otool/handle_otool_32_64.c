@@ -45,8 +45,10 @@ void		handle_otool_32(char *ptr, t_otool_env *e)
 	lc = (void *)ptr + sizeof(*	header);
 	if (!e->cpu)
 		e->cpu = 32;
-	if (header->filetype == MH_DYLIB || header->filetype == MH_OBJECT || header->filetype == MH_BUNDLE)
+	if (header->filetype == MH_DYLIB || header->filetype == MH_OBJECT)
 		e->lib = 1;
+	if (header->filetype == MH_BUNDLE)
+		e->bundle = 1;
 	if (header->filetype == MH_DYLINKER)
 		e->dylink = 1;
 	for (i = 0 ; header->ncmds > i ; ++i)
@@ -92,8 +94,12 @@ void		handle_otool_64(char *ptr, t_otool_env *e)
 	lc = (void *)ptr + sizeof(*	header);
 	if (!e->cpu)
 		e->cpu = 64;
-	if (header->filetype == MH_DYLIB || header->filetype == MH_OBJECT || header->filetype == MH_BUNDLE)
-		e->lib = 1;
+	if (header->filetype == MH_DYLIB)
+		e->dylib = 1;
+	if (header->filetype == MH_BUNDLE)
+		e->bundle = 1;
+	if (header->filetype == MH_OBJECT)
+		e->obj = 1;
 	if (header->filetype == MH_DYLINKER)
 		e->dylink = 1;
 	for (i = 0 ; header->ncmds > i ; ++i)

@@ -15,7 +15,7 @@
 static	int	magic_number[] = { MH_MAGIC, MH_MAGIC_64, MH_RANLIB, FAT_CIGAM, FAT_MAGIC ,0};
 
 void	(*magic_functions[])(char*, t_otool_env*) =
-{handle_otool_32 , handle_otool_64 , /*handle_otool_library, handle_otool_taf, handle_otool_fat*/};
+{handle_otool_32 , handle_otool_64 , handle_otool_library, handle_otool_taf, handle_otool_fat};
 
 void	ft_otool(char *ptr, t_otool_env *e)
 {
@@ -31,7 +31,7 @@ void	ft_otool(char *ptr, t_otool_env *e)
 	{
 		if (magic_num == magic_number[i])
 		{
-			ft_printf("%s:\n", e->file);
+			// ft_printf("%s:\n", e->file);
 			magic_functions[i](ptr, e);
 			flag++;
 		}
@@ -74,7 +74,10 @@ t_otool_env	*init_env(char *file)
 	e->cpu = 0;
 	e->fat = 0;
 	e->lib = 0;
+	e->obj = 0;
+	e->bundle = 0;
 	e->dylink = 0;
+	e->dylib = 0;
 	e->file = ft_strdup(file);
 	return (e);
 }

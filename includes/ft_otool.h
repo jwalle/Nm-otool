@@ -36,28 +36,17 @@
 
 #define MH_RANLIB 0x72613c21
 
-typedef	struct		s_list64
-{
-	uint32_t		value;
-	char			*name;
-	char			type;
-	int				n_sect;
-	char			n_type;
-}					t_list64;
-
 typedef	struct		s_otool_env
 {
 	int				fat;
 	int				dylink;
-	int				text;
 	int				cpu;
 	int				lib;
-	int				data;
-	int				bss;
-	t_list			*lists;
-	t_list64		**all;
-	int				stocked;
+	int				dylib;
+	int				obj;
+	int				bundle;
 	char			*file;
+
 }					t_otool_env;
 /*
 struct		_cpu_type_names
@@ -72,17 +61,12 @@ static struct _cpu_type_names cpu_type_names[] =
 	{CPU_TYPE_X86_64, "x86_64"}
 };*/
 
-
-// void				handle_64(char *ptr, t_nm_env *e);
-void	print_dat_shit(uint32_t size, uint32_t addr, char *offset, t_otool_env *e);
+void				print_dat_shit(uint32_t size, uint32_t addr, char *offset, t_otool_env *e);
 void				handle_otool_library(char *ptr, t_otool_env *e);
 void				handle_otool_64(char *ptr, t_otool_env *e);
 void				handle_otool_32(char *ptr, t_otool_env *e);
 void				handle_otool_fat(char *ptr, t_otool_env *e);
 void				handle_otool_taf(char *ptr, t_otool_env *e);
-t_list64			*stock_symbols(struct nlist_64 *array, char *st, int i, t_otool_env *e);
-void				stock_output(int nsyms, int symoff, int stroff, char *ptr, t_otool_env *e);
-void				print_output(t_otool_env *e);
 void				ft_otool(char *ptr, t_otool_env *e);
 
 # endif
