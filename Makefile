@@ -6,7 +6,7 @@
 #    By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/07/09 15:06:36 by jwalle            #+#    #+#              #
-#    Updated: 2016/11/01 14:51:13 by jwalle           ###   ########.fr        #
+#    Updated: 2016/11/26 14:08:33 by jwalle           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,6 @@ WHT = tput setaf 7
 RESET = tput sgr 0
 
 SRC_NM = main.c \
-	  sort.c \
 	  handle_library.c \
 	  handle_64.c \
 	  handle_32.c \
@@ -40,6 +39,9 @@ SRC_NM = main.c \
 	  common_functions.c \
 
 SRC_OTOOL = main.c \
+		handle_otool_32_64.c \
+	  	common_otool.c \
+
 
 OBJ_NM	=	$(SRC_NM:.c=.o)
 OBJ_OTOOL	=	$(SRC_OTOOL:.c=.o)
