@@ -28,9 +28,7 @@ char	get_type(t_list64 *new, t_nm_env *e)
 	char	c;
 	char	mask;
 	char	ret;
-	int		n;
 
-	n = new->n_sect;
 	c = new->n_type;
 	mask = c & N_TYPE;
 	ret = '?';
@@ -47,14 +45,11 @@ char	get_type(t_list64 *new, t_nm_env *e)
 	else if (mask == N_INDR)
 		ret = 'i';
 	else if (mask == N_SECT)
-		ret = get_nsect(n, e);
+		ret = get_nsect(new->n_sect, e);
 	if ((c & N_EXT) && ret != '?')
 		ret = ft_toupper(ret);
-	// printf("mask = %c, n = %d, e->data %d\n", mask, n, e->data);
 	return (ret);
 }
-
-#define SYMBOLS "TtSsDdBbiI"
 
 void	print_output(t_nm_env *e) // CACA
 {
@@ -72,18 +67,16 @@ void	print_output(t_nm_env *e) // CACA
 		}
 		else if (ft_strchr(SYMBOLS, e->all[i]->type))
 		{
-//			printf("value = %d\n", e->cpu);
 			if (e->dylink && e->cpu == 64)
 				ft_printf("%08x%08x %c %s\n", 0x0000ffff - 0x8000 , e->all[i]->value, e->all[i]->type, e->all[i]->name); // wtf
 			else if (e->lib || (e->cpu == 32 && e->fat == 1))
-				ft_printf("00000000%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
+				ft_printf("00000000%08x %c %s\n" ,
+					e->all[i]->value, e->all[i]->type, e->all[i]->name);
 			else if (e->cpu == 64)
 				ft_printf("00000001%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
 			else if (e->cpu == 32)
 				ft_printf("%08x %c %s\n" , e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		}		
-		// else
-			// printf("%016x %c %s <------------\n", e->all[i]->value, e->all[i]->type, e->all[i]->name);
 		i++;
 	}
 }

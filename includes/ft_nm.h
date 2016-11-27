@@ -32,7 +32,7 @@
 #include <mach-o/ranlib.h>
 #include <ar.h>
 
-
+#define SYMBOLS "TtSsDdBbiIAa"
 #define DEBUG ft_printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
 
 #define MH_RANLIB 0x72613c21

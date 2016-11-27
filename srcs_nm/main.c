@@ -30,7 +30,7 @@ void	nm(char *ptr, t_nm_env *e)
 	i = 0;
 	flag = 0;
 	magic_num = *(int *)ptr;
-	//printf("magic_number = %#x\n", magic_num);
+	// printf("magic_number = %#x\n", magic_num);
 	while (magic_number[i])
 	{
 		if (magic_num == magic_number[i])
