@@ -30,6 +30,7 @@ void	nm(char *ptr, t_nm_env *e)
 	i = 0;
 	flag = 0;
 	magic_num = *(int *)ptr;
+	e->stocked = 0;
 	// printf("magic_number = %#x\n", magic_num);
 	while (magic_number[i])
 	{
@@ -125,7 +126,7 @@ int		main(int ac, char **av)
 	{
 		while (i < ac)
 		{
-			printf("\n%s\n", av[i]); // REAL printf
+			ft_printf("\n%s\n", av[i]); // REAL printf
 			test_open(av[i]);
 			i++;
 		}
