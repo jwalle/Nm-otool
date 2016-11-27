@@ -109,8 +109,8 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 	struct mach_header	*header;
 	struct load_command	*lc;
 
-	nsect = 1;
 	i = 0;
+	nsect = 1;
 	header = (struct mach_header*)ptr;
 	lc = (void *)ptr + sizeof(*header);
 	if (!e->cpu)
