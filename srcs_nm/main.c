@@ -12,16 +12,14 @@
 
 #include "ft_nm.h"
 
-/*
-**	/usr/include/mach-o/...
-*/
+static int g_magic_number[] =
+{MH_MAGIC, MH_MAGIC_64, MH_RANLIB, FAT_CIGAM, FAT_MAGIC, 0};
 
-static	int	magic_number[] = { MH_MAGIC , MH_MAGIC_64, MH_RANLIB, FAT_CIGAM, FAT_MAGIC ,0};
+void (*g_magic_functions[])(char*, t_nm_env*) =
+{ handle_stuff_32, handle_stuff_64, handle_stuff_library,
+	handle_stuff_taf, handle_stuff_fat};
 
-void	(*magic_functions[])(char*, t_nm_env*) =
-{ handle_stuff_32 , handle_stuff_64 , handle_stuff_library, handle_stuff_taf, handle_stuff_fat};
-		
-void	nm(char *ptr, t_nm_env *e)
+void		nm(char *ptr, t_nm_env *e)
 {
 	int				i;
 	int				flag;
@@ -31,21 +29,18 @@ void	nm(char *ptr, t_nm_env *e)
 	flag = 0;
 	magic_num = *(int *)ptr;
 	e->stocked = 0;
-	// printf("magic_number = %#x\n", magic_num);
-	while (magic_number[i])
+	while (g_magic_number[i])
 	{
-		if (magic_num == magic_number[i])
+		if (magic_num == g_magic_number[i])
 		{
-			magic_functions[i](ptr, e);
+			g_magic_functions[i](ptr, e);
 			flag++;
 		}
 		i++;
 	}
-	// if (!flag)
-		// ft_printf("ft_nm : %s : The file was not recognized as a valid object file.\n", e->file);
 }
 
-int		process_file(int fd, t_nm_env *e)
+int			process_file(int fd, t_nm_env *e)
 {
 	struct stat		buf;
 	char			*ptr;
@@ -72,7 +67,7 @@ int		process_file(int fd, t_nm_env *e)
 
 t_nm_env	*init_env(char *file)
 {
-	t_nm_env *e;
+	t_nm_env	*e;
 
 	e = (t_nm_env *)malloc(sizeof(t_nm_env));
 	e->cpu = 0;
@@ -87,13 +82,7 @@ t_nm_env	*init_env(char *file)
 	return (e);
 }
 
-void	clear_env(t_nm_env *e)
-{
-	free(e->file);
-	free(e);
-}
-
-int		test_open(char *av)
+int			test_open(char *av)
 {
 	int			fd;
 	t_nm_env	*e;
@@ -102,22 +91,22 @@ int		test_open(char *av)
 	if ((fd = open(av, O_RDONLY)) < 0)
 	{
 		ft_printf("%s : No such file or directory.\n", av);
-		return(EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	}
 	e = init_env(av);
 	process_file(fd, e);
-	clear_env(e);
+	free(e->file);
+	free(e);
 	return (fd);
 }
 
-int		main(int ac, char **av)
+int			main(int ac, char **av)
 {
-	int 			fd;
-	int				i;
+	int	fd;
+	int	i;
 
 	fd = 0;
 	i = 1;
-
 	if (ac == 1)
 		test_open("a.out");
 	else if (ac == 2)
@@ -126,15 +115,10 @@ int		main(int ac, char **av)
 	{
 		while (i < ac)
 		{
-			ft_printf("\n%s\n", av[i]); // REAL printf
+			ft_printf("\n%s:\n", av[i]);
 			test_open(av[i]);
 			i++;
 		}
-	}
-	else
-	{
-		ft_printf("Usage :\n"); //todo
-		return (EXIT_FAILURE);
 	}
 	return (0);
 }

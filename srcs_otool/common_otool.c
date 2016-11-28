@@ -12,11 +12,10 @@
 
 #include "ft_otool.h"
 
-static void print_value(int n, t_otool_env *e)
+static void	print_value(int n, t_otool_env *e)
 {
-	// printf("lib = %d, cpu = %d\n", e->lib, e->fat);
 	if (e->dylink && e->cpu == 64)
-		ft_printf("%08x%08x", 0x0000ffff - 0x8000 , n); // wtf
+		ft_printf("%08x%08x", 0x0000ffff - 0x8000, n); // wtf
 	else if (e->lib && e->cpu == 32)
 		ft_printf("%08x", n);
 	else if (e->dylib || e->obj || e->lib || (e->cpu == 32 && e->fat == 1))
@@ -24,18 +23,16 @@ static void print_value(int n, t_otool_env *e)
 	else if (e->cpu == 64)
 		ft_printf("00000001%08x", n);
 	else if (e->cpu == 32)
-		ft_printf("%08x" , n);
-
+		ft_printf("%08x", n);
 }
 
-void	print_dat_shit(uint32_t size, uint32_t addr, char *offset, t_otool_env *e)
+void		print_otool(uint32_t size, uint32_t addr, char *offset,
+	t_otool_env *e)
 {
-	uint32_t 	n;
+	uint32_t	n;
 	uint32_t	i;
 
 	n = 0;
-
-	// printf("lib %d\n", e->bundle);
 	if (!e->lib || e->bundle || e->dylib)
 		ft_printf("%s:\n", e->file);
 	ft_printf("Contents of (__TEXT,__text) section\n");
@@ -50,6 +47,6 @@ void	print_dat_shit(uint32_t size, uint32_t addr, char *offset, t_otool_env *e)
 			i++;
 		}
 		ft_printf("\n");
-		n += i;		
+		n += i;
 	}
 }

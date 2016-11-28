@@ -13,29 +13,22 @@
 #ifndef FT_NM_H
 # define FT_NM_H
 
-# include <unistd.h>
-# include <stdlib.h>
-# include <pwd.h>
-# include <fcntl.h>
-# include <grp.h>
-# include <time.h>
-# include <stdio.h>		//PRINTF A RETIRER
 # include "libft.h"
 # include "ft_printf.h"
+# include <fcntl.h>
+# include <sys/mman.h>
+# include <sys/stat.h>
+# include <mach-o/loader.h>
+# include <mach-o/nlist.h>
+# include <mach-o/fat.h>
+# include <mach-o/ranlib.h>
+# include <ar.h>
 
-#include <stdio.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <mach-o/loader.h>
-#include <mach-o/nlist.h>
-#include <mach-o/fat.h>
-#include <mach-o/ranlib.h>
-#include <ar.h>
+# define SYMBOLS "TtSsDdBbiIAa"
+# define AR_HDR_SIZE	sizeof(struct ar_hdr)
+# define RAN_SIZE sizeof(struct ranlib)
 
-#define SYMBOLS "TtSsDdBbiIAa"
-#define DEBUG ft_printf("File : %s, Function : %s, Line : %d\n", __FILE__,__FUNCTION__,__LINE__)
-
-#define MH_RANLIB 0x72613c21
+# define MH_RANLIB 0x72613c21
 
 typedef	struct		s_list64
 {
@@ -60,31 +53,19 @@ typedef	struct		s_nm_env
 	int				stocked;
 	char			*file;
 }					t_nm_env;
-/*
-struct		_cpu_type_names
-{
-	cpu_type_t		cputype;
-	const char		*cpu_name;
-};
 
-static struct _cpu_type_names cpu_type_names[] =
-{
-	{CPU_TYPE_I386, "i386"},
-	{CPU_TYPE_X86_64, "x86_64"}
-};*/
-
-
-// void				handle_64(char *ptr, t_nm_env *e);
 void				handle_stuff_library(char *ptr, t_nm_env *e);
 void				handle_stuff_64(char *ptr, t_nm_env *e);
 void				handle_stuff_32(char *ptr, t_nm_env *e);
 void				handle_stuff_fat(char *ptr, t_nm_env *e);
 void				handle_stuff_taf(char *ptr, t_nm_env *e);
-t_list64			*stock_symbols(struct nlist_64 *array, char *st, int i, t_nm_env *e);
+t_list64			*stock_symbols(struct nlist_64 *array, char *st, int i,
+					t_nm_env *e);
 void				sort_output(t_nm_env *e);
-void				stock_output(int nsyms, int symoff, int stroff, char *ptr, t_nm_env *e);
+void				stock_output(int nsyms, int symoff, int stroff, char *ptr,
+					t_nm_env *e);
 void				print_output(t_nm_env *e);
 char				get_type(t_list64 *new, t_nm_env *e);
 void				nm(char *ptr, t_nm_env *e);
 
-# endif
+#endif
