@@ -36,7 +36,9 @@ typedef	struct		s_list64
 	char			*name;
 	char			type;
 	int				n_sect;
+	int				n_desc;
 	char			n_type;
+	int				strx;
 }					t_list64;
 
 typedef	struct		s_nm_env
@@ -52,6 +54,7 @@ typedef	struct		s_nm_env
 	t_list64		**all;
 	int				stocked;
 	char			*file;
+	char			bonus;
 }					t_nm_env;
 
 void				handle_stuff_library(char *ptr, t_nm_env *e);

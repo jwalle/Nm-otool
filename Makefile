@@ -6,7 +6,7 @@
 #    By: jwalle <jwalle@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/07/09 15:06:36 by jwalle            #+#    #+#              #
-#    Updated: 2016/11/26 14:08:33 by jwalle           ###   ########.fr        #
+#    Updated: 2016/11/28 17:04:01 by jwalle           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,7 @@ SRC_NM = main.c \
 	  handle_32.c \
 	  handle_fat.c \
 	  common_functions.c \
+	  sort.c \
 
 SRC_OTOOL = main.c \
 		handle_otool_32_64.c \

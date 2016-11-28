@@ -21,7 +21,9 @@ t_list64	*stock_sym_64(struct nlist_64 *array, char *st, int i, t_nm_env *e)
 	new->value = array[i].n_value;
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->n_sect = array[i].n_sect;
+	new->n_desc = array[i].n_desc;
 	new->n_type = array[i].n_type;
+	new->strx = array[i].n_un.n_strx;
 	new->type = get_type(new, e);
 	return (new);
 }

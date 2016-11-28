@@ -31,7 +31,7 @@
 # include <ar.h>
 
 # define MH_RANLIB 0x72613c21
-# define AR_HDR_SIZE	sizeof(struct ar_hdr)
+# define AR_HDR_SIZE sizeof(struct ar_hdr)
 # define RAN_SIZE sizeof(struct ranlib)
 
 typedef	struct		s_otool_env

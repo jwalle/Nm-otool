@@ -15,13 +15,15 @@
 t_list64	*stock_symbols_32(struct nlist *array, char *st, int i, t_nm_env *e)
 {
 	t_list64	*new;
-
+	
 	if (!(new = malloc(sizeof(t_list64))))
 		return (NULL);
 	new->value = array[i].n_value;
 	new->name = ft_strdup(st + array[i].n_un.n_strx);
 	new->n_sect = array[i].n_sect;
+	new->n_desc = array[i].n_desc;
 	new->n_type = array[i].n_type;
+	new->strx = array[i].n_un.n_strx;
 	new->type = get_type(new, e);
 	return (new);
 }

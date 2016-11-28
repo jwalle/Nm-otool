@@ -51,11 +51,10 @@ char	get_type(t_list64 *new, t_nm_env *e)
 	return (ret);
 }
 
-void	print_output(t_nm_env *e) // CACA
+void	print_default(t_nm_env *e)
 {
-	int	i;
+	int i = 0;
 
-	i = 0;
 	while (i < e->stocked)
 	{
 		if (e->all[i]->type == 'U')
@@ -82,28 +81,40 @@ void	print_output(t_nm_env *e) // CACA
 	}
 }
 
-void	sort_output(t_nm_env *e)
+void	print_x(t_nm_env *e)
 {
-	int			i;
-	int			j;
-	int			n;
-	t_list64	*temp;
+	int i = 0;
 
-	i = 0;
-	n = e->stocked;
-	while (i < n)
+	while (i < e->stocked)
 	{
-		j = 0;
-		while (j < n - 1)
+		if (e->all[i]->type == 'U')
 		{
-			while (ft_strcmp(e->all[j]->name, e->all[j + 1]->name) > 0)
-			{
-				temp = e->all[j + 1];
-				e->all[j + 1] = e->all[j];
-				e->all[j] = temp;
-			}
-			j++;
+			if (e->cpu == 32 && !e->fat)
+				ft_printf("%08x", 0);
+			else if (e->cpu == 64 || e->cpu == 16 || e->fat)
+				ft_printf("%016x", 0);
+			ft_printf(" %02x %02x %04x %08x %s\n", e->all[i]->n_type, e->all[i]->n_sect, e->all[i]->n_desc, e->all[i]->strx, e->all[i]->name);		
+		}
+		else if (ft_strchr(SYMBOLS, e->all[i]->type))
+		{
+			if (e->dylink && e->cpu == 64)
+				ft_printf("%08x%08x", 0x0000ffff - 0x8000, e->all[i]->value);
+			else if (e->lib || (e->cpu == 32 && e->fat == 1))
+				ft_printf("%08x%08x", 0, e->all[i]->value);
+			else if (e->cpu == 64)
+				ft_printf("%08x%08x", 1, e->all[i]->value);
+			else if (e->cpu == 32)
+				ft_printf("%08x", e->all[i]->value);
+			ft_printf(" %02x %02x %04x %08x %s\n", e->all[i]->n_type, e->all[i]->n_sect, e->all[i]->n_desc, e->all[i]->strx, e->all[i]->name);
 		}
 		i++;
 	}
+}
+
+
+void	print_output(t_nm_env *e) // CACA
+{
+	if (e->bonus == 'x')
+		print_x(e);
+	print_default(e);
 }
