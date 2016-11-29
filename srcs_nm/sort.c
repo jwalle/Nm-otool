@@ -80,7 +80,9 @@ void	sort_default(t_nm_env *e)
 
 void	sort_output(t_nm_env *e)
 {
-	if (e->bonus == 'r')
+	if (e->bonus == 'p')
+		return ;
+	else if (e->bonus == 'r')
 		sort_reverse(e);
 	else if (e->bonus == 'n')
 		sort_num(e);

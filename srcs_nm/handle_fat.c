@@ -12,8 +12,6 @@
 
 #include "ft_nm.h"
 
-#define CPU_MAC 0x01
-
 int			swap_int_end(int n)
 {
 	int		ret;

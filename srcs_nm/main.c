@@ -113,8 +113,12 @@ char		get_bonus(char *av)
 		return ('x');
 	else if (!ft_strcmp("-r", av))
 		return ('r');
+	else if (!ft_strcmp("-p", av))
+		return ('p');
 	else if (!ft_strcmp("-n", av))
-		return ('r');
+		return ('n');
+	else if (!ft_strcmp("-u", av))
+		return ('u');
 	ft_printf("%s is not a valid attribute\n", av);
 	return (0);
 }

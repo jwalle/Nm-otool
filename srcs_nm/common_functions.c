@@ -73,13 +73,18 @@ void	print_default(t_nm_env *e)
 	{
 		if (e->all[i]->type == 'U')
 		{
-			if (e->cpu == 32 && !e->fat)
-				ft_printf("%8.x", 0);
-			else if (e->cpu == 64 || e->cpu == 16 || e->fat)
-				ft_printf("        %8.x", 0);
-			ft_printf(" %c %s\n"	, e->all[i]->type, e->all[i]->name);
+			if (e->bonus != 'u')
+			{
+				if (e->cpu == 32 && !e->fat)
+					ft_printf("%8.x", 0);
+				else if (e->cpu == 64 || e->cpu == 16 || e->fat)
+					ft_printf("        %8.x", 0);
+				ft_printf(" %c %s\n"	, e->all[i]->type, e->all[i]->name);
+			}
+			else
+				ft_printf("%s\n", e->all[i]->name);
 		}
-		else if (ft_strchr(SYMBOLS, e->all[i]->type))
+		else if (ft_strchr(SYMBOLS, e->all[i]->type) && e->bonus != 'u')
 		{
 			if (e->dylink && e->cpu == 64)
 				ft_printf("%08x%08x", 0x0000ffff - 0x8000, e->all[i]->value);
