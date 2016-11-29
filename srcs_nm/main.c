@@ -35,6 +35,7 @@ void		nm(char *ptr, t_nm_env *e)
 		{
 			g_magic_functions[i](ptr, e);
 			flag++;
+
 		}
 		i++;
 	}
@@ -101,7 +102,9 @@ int			test_open(char *av, char bonus, int mult)
 	process_file(fd, e);
 	free(e->file);
 	free(e);
-	return (fd);
+	if (close(fd))
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
 
 char		get_bonus(char *av)
@@ -109,6 +112,8 @@ char		get_bonus(char *av)
 	if (!ft_strcmp("-x", av))
 		return ('x');
 	else if (!ft_strcmp("-r", av))
+		return ('r');
+	else if (!ft_strcmp("-n", av))
 		return ('r');
 	ft_printf("%s is not a valid attribute\n", av);
 	return (0);

@@ -23,6 +23,20 @@ char	get_nsect(int n, t_nm_env *e)
 	return ('s');
 }
 
+void	destroy_symbols(t_nm_env *e)
+{
+	int			i;
+
+	i = 0;
+	while (i < e->stocked)
+	{
+		free(e->all[i]->name);
+		free(e->all[i]);
+		i++;
+	}
+	free(e->all);
+}
+
 char	get_type(t_list64 *new, t_nm_env *e)
 {
 	char	c;

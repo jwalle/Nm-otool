@@ -12,6 +12,7 @@
 
 #include "ft_nm.h"
 
+
 void		print_library(void *ptr, struct ranlib *ran,
 					unsigned int n, t_nm_env *e)
 {
@@ -74,4 +75,5 @@ void		handle_stuff_library(char *ptr, t_nm_env *e)
 	i = *(int *)(ptr + hdr_sz) / sizeof(struct ranlib);
 	sort_library(ran, i);
 	print_library(ptr, ran, i, e);
+	free(ran);
 }

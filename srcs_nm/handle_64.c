@@ -45,7 +45,7 @@ static void	stock_output_64(struct symtab_command *sym, char *ptr, t_nm_env *e)
 		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0)
 		{
 			if (ft_strlen(string_table + array[i].n_un.n_strx)
-				&& !strstr(string_table + array[i].n_un.n_strx, "radr"))
+				&& !ft_strstr(string_table + array[i].n_un.n_strx, "radr"))
 				all[e->stocked++] = stock_sym_64(array, string_table, i, e);
 		}
 		i++;
@@ -129,4 +129,5 @@ void		handle_stuff_64(char *ptr, t_nm_env *e)
 		lc = (void *)lc + lc->cmdsize;
 	}
 	handle_64(ptr, e);
+	destroy_symbols(e);
 }

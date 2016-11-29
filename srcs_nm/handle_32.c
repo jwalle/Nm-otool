@@ -35,7 +35,7 @@ static void	stock_output_32(struct symtab_command *sym, char *ptr, t_nm_env *e)
 	struct nlist	*array;
 	t_list64		**all;
 
-	i = 0;
+	i = 0;	
 	array = (void *)ptr + sym->symoff;
 	string_table = (void *)ptr + sym->stroff;
 	all = (t_list64**)malloc(sizeof(t_list64*) * sym->nsyms);
@@ -45,7 +45,7 @@ static void	stock_output_32(struct symtab_command *sym, char *ptr, t_nm_env *e)
 		if (array[i].n_un.n_strx >= 1 && array[i].n_sect >= 0)
 		{
 			if (ft_strlen(string_table + array[i].n_un.n_strx)
-				&& !strstr(string_table + array[i].n_un.n_strx, "radr"))
+				&& !ft_strstr(string_table + array[i].n_un.n_strx, "radr"))
 				all[e->stocked++] = stock_symbols_32(array, string_table, i, e);
 		}
 		i++;
@@ -125,4 +125,5 @@ void		handle_stuff_32(char *ptr, t_nm_env *e)
 		lc = (void *)lc + lc->cmdsize;
 	}
 	handle_32(ptr, e);
+	destroy_symbols(e);
 }
