@@ -15,7 +15,7 @@
 static void	print_value(int n, t_otool_env *e)
 {
 	if (e->dylink && e->cpu == 64)
-		ft_printf("%08x%08x", 0x0000ffff - 0x8000, n); // wtf
+		ft_printf("%08x%08x", 0x0000ffff - 0x8000, n);
 	else if (e->lib && e->cpu == 32)
 		ft_printf("%08x", n);
 	else if (e->dylib || e->obj || e->lib || (e->cpu == 32 && e->fat == 1))

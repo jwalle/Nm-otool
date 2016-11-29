@@ -12,7 +12,6 @@
 
 #include "ft_nm.h"
 
-
 void		print_library(void *ptr, struct ranlib *ran,
 					unsigned int n, t_nm_env *e)
 {

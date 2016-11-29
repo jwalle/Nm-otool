@@ -22,11 +22,9 @@ void (*g_magic_functions[])(char*, t_nm_env*) =
 void		nm(char *ptr, t_nm_env *e)
 {
 	int				i;
-	int				flag;
 	int				magic_num;
 
 	i = 0;
-	flag = 0;
 	magic_num = *(int *)ptr;
 	e->stocked = 0;
 	while (g_magic_number[i])
@@ -34,8 +32,6 @@ void		nm(char *ptr, t_nm_env *e)
 		if (magic_num == g_magic_number[i])
 		{
 			g_magic_functions[i](ptr, e);
-			flag++;
-
 		}
 		i++;
 	}
@@ -66,24 +62,6 @@ int			process_file(int fd, t_nm_env *e)
 	return (EXIT_SUCCESS);
 }
 
-t_nm_env	*init_env(char *file, char bonus)
-{
-	t_nm_env	*e;
-
-	e = (t_nm_env *)malloc(sizeof(t_nm_env));
-	e->cpu = 0;
-	e->fat = 0;
-	e->lib = 0;
-	e->text = 0;
-	e->dylink = 0;
-	e->data = 0;
-	e->bss = 0;
-	e->stocked = 0;
-	e->bonus = bonus;
-	e->file = ft_strdup(file);
-	return (e);
-}
-
 int			test_open(char *av, char bonus, int mult)
 {
 	int			fd;
@@ -105,22 +83,6 @@ int			test_open(char *av, char bonus, int mult)
 	if (close(fd))
 		return (EXIT_FAILURE);
 	return (EXIT_SUCCESS);
-}
-
-char		get_bonus(char *av)
-{
-	if (!ft_strcmp("-x", av))
-		return ('x');
-	else if (!ft_strcmp("-r", av))
-		return ('r');
-	else if (!ft_strcmp("-p", av))
-		return ('p');
-	else if (!ft_strcmp("-n", av))
-		return ('n');
-	else if (!ft_strcmp("-u", av))
-		return ('u');
-	ft_printf("%s is not a valid attribute\n", av);
-	return (0);
 }
 
 int			main(int ac, char **av)

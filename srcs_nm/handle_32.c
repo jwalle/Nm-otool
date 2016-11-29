@@ -15,7 +15,7 @@
 t_list64	*stock_symbols_32(struct nlist *array, char *st, int i, t_nm_env *e)
 {
 	t_list64	*new;
-	
+
 	if (!(new = malloc(sizeof(t_list64))))
 		return (NULL);
 	new->value = array[i].n_value;
@@ -35,7 +35,7 @@ static void	stock_output_32(struct symtab_command *sym, char *ptr, t_nm_env *e)
 	struct nlist	*array;
 	t_list64		**all;
 
-	i = 0;	
+	i = 0;
 	array = (void *)ptr + sym->symoff;
 	string_table = (void *)ptr + sym->stroff;
 	all = (t_list64**)malloc(sizeof(t_list64*) * sym->nsyms);

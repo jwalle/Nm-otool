@@ -38,6 +38,7 @@ SRC_NM = main.c \
 	  handle_fat.c \
 	  common_functions.c \
 	  sort.c \
+	  print_all.c \
 
 SRC_OTOOL = main.c \
 		handle_otool_32_64.c \

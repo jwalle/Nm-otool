@@ -57,6 +57,8 @@ typedef	struct		s_nm_env
 	char			bonus;
 }					t_nm_env;
 
+t_nm_env			*init_env(char *file, char bonus);
+char				get_bonus(char *av);
 void				handle_stuff_library(char *ptr, t_nm_env *e);
 void				handle_stuff_64(char *ptr, t_nm_env *e);
 void				handle_stuff_32(char *ptr, t_nm_env *e);
